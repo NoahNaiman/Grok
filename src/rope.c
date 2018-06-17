@@ -1,5 +1,6 @@
-#include<stdlib.h>
+#include<string.h>
 #include<stdio.h>
+#include<stdlib.h>
 
 /*
  * Rope Definition
@@ -11,27 +12,50 @@
  *	of all leaves in its left subtree if not.
  *
  * Typdef:
- *	node
+ *	ropeNode
  *
  * Values:
  *	char string[]
  *		-Leaf: Characters representing some portion of text
  *		-Non-leaf: NULL
  *
- *	node left
+ *	int weight
+ *		-This node's weight as defined above
+ *
+ *	ropeNode left
  *		-A pointer to this node's left child node
  *
- *	node right
+ *	ropeNode right
  *		-A pointer to this node's right child node
  */
 
-typedef struct Rope node;
+typedef struct Rope ropeNode;
 
-struct node {
+struct ropeNode {
 	char *string;
-	node *left;
-	node *right;
+	int weight;
+	ropeNode *left;
+	ropeNode *right;
 };
+
+struct ropeNode* makeRopeNode(char* words){
+
+	//Allocate space for new ropeNode
+	struct ropeNode* newNode = (struct ropeNode*)malloc(sizeof(struct ropeNode));
+	
+	//Assign given words to newNode
+	newNode->string = words;
+
+	//Assign weight to newNode, zero if words is NULL
+	newNode->weight = !words ? strlen(words) : 0;
+
+	//Set newNode's children as NULL
+	newNode->left = NULL;
+	newNode->right = NULL;
+
+	//Return newly constructed
+	return(newNode);
+}
 
 int main(){
 	return 1;
