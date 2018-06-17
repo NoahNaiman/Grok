@@ -24,3 +24,15 @@
  *	node right
  *		-A pointer to this node's right child node
  */
+
+typedef struct Rope node;
+
+struct node {
+	char *string;
+	node *left;
+	node *right;
+};
+
+int main(){
+	return 1;
+}
