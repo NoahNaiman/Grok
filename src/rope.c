@@ -123,11 +123,16 @@ ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	return newParent;
 };
 
-int characterAt(ropeNode* node, int position){
-	if(node->left->weight){
-		return 2;
+
+
+char characterAt(ropeNode* node, int position){
+	if(node->left->weight <= position){
+		return characterAt(node->right, position - node->weight);
 	}
-	return 1;
+	else if(node->left != NULL){
+		return characterAt(node->left, position);
+	}
+	return node->string[position];
 }
 
 
