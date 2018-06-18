@@ -30,14 +30,12 @@
  */
 
 //Declare and typdef (alias) Rope as ropeNode
-typedef struct Rope ropeNode;
-
-struct ropeNode {
+typedef struct Rope {
 	char *string;
 	int weight;
-	ropeNode *left;
-	ropeNode *right;
-};
+	struct Rope *left;
+	struct Rope *right;
+} ropeNode;
 
 
 /*
@@ -62,10 +60,10 @@ struct ropeNode {
  *		-A newly created rope node with no children
  */
 
-struct ropeNode* makeRopeNode(char* words){
+ropeNode* makeRopeNode(char* words){
 
 	//Allocate space for new ropeNode
-	struct ropeNode* newNode = (struct ropeNode*)malloc(sizeof(struct ropeNode));
+	ropeNode* newNode = (ropeNode*)malloc(sizeof(ropeNode));
 	
 	//Assign given words to newNode
 	newNode->string = words;
@@ -113,9 +111,9 @@ struct ropeNode* makeRopeNode(char* words){
  */
 
 //TODO: SET WEIGHT, RAISE WARNING IF EITHER ARE NULL!
-struct ropeNode* concatenate(ropeNode* left, ropeNode* right){
+ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	//Create new parent node to attach children to
-	struct ropeNode* newParent = makeRopeNode(NULL);
+	ropeNode* newParent = makeRopeNode(NULL);
 
 	//Sets newParent's left and right children
 	newParent->left = left;
@@ -124,6 +122,13 @@ struct ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	//Return newParent
 	return newParent;
 };
+
+int characterAt(ropeNode* node, int position){
+	if(node->left->weight){
+		return 2;
+	}
+	return 1;
+}
 
 
 
