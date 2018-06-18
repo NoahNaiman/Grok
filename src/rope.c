@@ -110,7 +110,7 @@ ropeNode* makeRopeNode(char* words){
  *		 two parts of a newly concatenated string
  */
 
-//TODO: SET WEIGHT, RAISE WARNING IF EITHER ARE NULL!
+//TODO: SET WEIGHT, RAISE WARNING IF EITHER ARE NULL, ENSURE ALL CHILDREN ARE FULL
 ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	//Create new parent node to attach children to
 	ropeNode* newParent = makeRopeNode(NULL);
@@ -123,16 +123,67 @@ ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	return newParent;
 };
 
-
+/*
+ * characterAt Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Searches for the character in a string at a given index
+ *
+ * Parameters:
+ *	ropeNode* node
+ *		-A pointer to a ropeNode whose string represents the
+ *		 text to be searched
+ *		-May be NULL
+ *	int position
+ *		-The index whose corresponding character should be returned
+ *
+ * Return Type:
+ *	char
+ *		-A character at the specified position
+ */
 
 char characterAt(ropeNode* node, int position){
+	//If position is out of bounds return NULL character
+	if(!node && (position > node->weight) && (node->right == NULL)){
+		return '\0';
+	}
+
+	//Decide which direction to recurse down, update position as necessary
 	if(node->left->weight <= position){
-		return characterAt(node->right, position - node->weight);
+		return characterAt(node->right, (position - node->weight));
 	}
 	else if(node->left != NULL){
 		return characterAt(node->left, position);
 	}
+
+	//Return char at given position
 	return node->string[position];
+}
+
+/*
+ * printString Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Prints string starting from node to standard output
+ *
+ * Parameters:
+ *	ropeNode* node
+ *		-A pointer to a ropeNode whose string should be printed, or to be
+ *	     recursed downwards from
+ */
+
+void printString(ropeNode* node){
+	//Stop if given node is NULL
+	if(node == NULL){
+		return;
+	}
+	//Check if node has a string to print, only leaves will
+	if(node->string != NULL){
+		printf("%s", node->string);
+	}
+	//Recurse down tree
+	printString(node->left);
+	printString(node->right);
 }
 
 
