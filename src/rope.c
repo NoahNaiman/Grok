@@ -29,6 +29,7 @@
  *		-A pointer to this node's right child node
  */
 
+//Declare and typdef (alias) Rope as ropeNode
 typedef struct Rope ropeNode;
 
 struct ropeNode {
@@ -37,6 +38,29 @@ struct ropeNode {
 	ropeNode *left;
 	ropeNode *right;
 };
+
+
+/*
+ * makeRopeNode Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Creates a new ropeNode
+ *		-Sets *string to a given string of characters or NULL
+ *		 if none is given
+ *		-Sets weight to length of given string or zero if none
+ *		 is given
+ *		-Sets left child to NULL
+ *		-Sets right child to NULL
+ *
+ * Parameters:
+ *	char* words
+ *		-A pointer to a string of characters
+ *		-May be NULL
+ *
+ * Return Type:
+ *	ropeNode*
+ *		-A newly created rope node with no children
+ */
 
 struct ropeNode* makeRopeNode(char* words){
 
@@ -56,6 +80,52 @@ struct ropeNode* makeRopeNode(char* words){
 	//Return newly constructed
 	return(newNode);
 }
+
+/*
+ * concatenate Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Concatenates a string by creating a new parent ropeNode
+ *		-Sets newParent's left child to what should
+ *		 be the former part of the new string
+ *		-Sets newParent's right child to what should be the
+ *		 latter part of the new string
+ *		-Sets newParent's *string to NULL
+ *		-Sets newParent's weight to the length of the string
+ *		 in its left subtree
+ *
+ * Parameters:
+ *	ropeNode* left
+ *		-A pointer to a ropeNode whose string represents the
+ *		 former part of some text
+ *		-Should not be NULL as this could cause unintended
+ *		 side effects
+ *	ropeNode* right
+ *		-A pointer to a ropeNode whose string represents the
+ *		 latter part of some text
+ *		-Should not be NULL as this could cause unintended
+ *		 side effects
+ *
+ * Return Type:
+ *	ropeNode*
+ *		-A newly created rope node whose children represent
+ *		 two parts of a newly concatenated string
+ */
+
+//TODO: SET WEIGHT, RAISE WARNING IF EITHER ARE NULL!
+struct ropeNode* concatenate(ropeNode* left, ropeNode* right){
+	//Create new parent node to attach children to
+	struct ropeNode* newParent = makeRopeNode(NULL);
+
+	//Sets newParent's left and right children
+	newParent->left = left;
+	newParent->right = right;
+
+	//Return newParent
+	return newParent;
+};
+
+
 
 int main(){
 	return 1;
