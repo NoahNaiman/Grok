@@ -30,7 +30,6 @@
  *		-A pointer to this node's right child node
  */
 
-//Declare and typdef (alias) Rope as ropeNode
 typedef struct Rope {
 	char *string;
 	int weight;
@@ -108,6 +107,37 @@ int stringLength(ropeNode* root){
 	}
 	//If root has a string, return its length
 	return root->weight;
+}
+
+/*
+ * isBalanced Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Checks if a series of ropeNodes is balanced
+ *		-A rope is balanced if every ropeNode has either two or no children
+ *
+ * Parameters:
+ *	ropeNode* root
+ *		-A pointer to a ropeNode representing where to start checking
+ *	     for balance
+ *		-May be NULL
+ *
+ * Return Type:
+ *	int
+ *		-1 if balanced
+ *		-0 if unbalanced
+ */
+int isBalanced(ropeNode* root){
+	if((root->left == NULL && root->right == NULL) || root == NULL){
+		return 1;
+	}
+	else if(root->left != NULL && root->right == NULL){
+		return 0;
+	}
+	else if(root->left == NULL && root->right != NULL){
+		return 0;
+	}
+	return isBalanced(root->left) & isBalanced(root->right);
 }
 
 /*
