@@ -1,6 +1,7 @@
 #include<string.h>
 #include<stdio.h>
 #include<stdlib.h>
+//TODO: CUT FUNCTION
 
 /*
  * Rope Definition
@@ -130,7 +131,7 @@ ropeNode* concatenate(ropeNode* left, ropeNode* right){
  *	Searches for the character in a string at a given index
  *
  * Parameters:
- *	ropeNode* node
+ *	ropeNode* root
  *		-A pointer to a ropeNode whose string represents the
  *		 text to be searched
  *		-May be NULL
@@ -141,23 +142,52 @@ ropeNode* concatenate(ropeNode* left, ropeNode* right){
  *	char
  *		-A character at the specified position
  */
-
-char characterAt(ropeNode* node, int position){
+char characterAt(ropeNode* root, int position){
 	//If position is out of bounds return NULL character
-	if(!node && (position > node->weight) && (node->right == NULL)){
+	if(!root && (position > root->weight) && (root->right == NULL)){
 		return '\0';
 	}
 
 	//Decide which direction to recurse down, update position as necessary
-	if(node->left->weight <= position){
-		return characterAt(node->right, (position - node->weight));
+	if(root->left->weight <= position){
+		return characterAt(root->right, (position - root->weight));
 	}
-	else if(node->left != NULL){
-		return characterAt(node->left, position);
+	else if(root->left != NULL){
+		return characterAt(root->left, position);
 	}
 
 	//Return char at given position
-	return node->string[position];
+	return root->string[position];
+}
+
+/*
+ * stringLength Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	-Gets the length of the string held in the leaves of a given ropeNode
+ *	-Should only be called on the left child of a ropeNode to start scan
+ *
+ * Parameters:
+ *	ropeNode* root
+ *		-A pointer to a ropeNode whose string represents the
+ *		 text to scanned
+ *		-May be NULL
+ *
+ * Return Type:
+ *	int
+ *		-The length of a given ropeNode's string length
+ */
+int stringLength(ropeNode* root){
+	//Check if given root node is NULL
+	if(root == NULL){
+		return 0;
+	}
+	//If root has children, recurse down it
+	if(root->string == NULL){
+		return stringLength(root->left) + stringLength(root->right);
+	}
+	//If root has a string, return its length
+	return root->weight;
 }
 
 /*
@@ -167,23 +197,23 @@ char characterAt(ropeNode* node, int position){
  *	Prints string starting from node to standard output
  *
  * Parameters:
- *	ropeNode* node
+ *	ropeNode* root
  *		-A pointer to a ropeNode whose string should be printed, or to be
  *	     recursed downwards from
  */
-
-void printString(ropeNode* node){
+//TODO: COME BACK TO THIS ONCE FULL FILE IS CREATED, STORE OUTPUT? GET STRING?
+void printString(ropeNode* root){
 	//Stop if given node is NULL
-	if(node == NULL){
+	if(root == NULL){
 		return;
 	}
 	//Check if node has a string to print, only leaves will
-	if(node->string != NULL){
-		printf("%s", node->string);
+	if(root->string != NULL){
+		printf("%s", root->string);
 	}
 	//Recurse down tree
-	printString(node->left);
-	printString(node->right);
+	printString(root->left);
+	printString(root->right);
 }
 
 
