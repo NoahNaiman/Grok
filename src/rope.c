@@ -81,6 +81,36 @@ ropeNode* makeRopeNode(char* words){
 }
 
 /*
+ * stringLength Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	-Gets the length of the string held in the leaves of a given ropeNode
+ *	-Should only be called on the left child of a ropeNode to start scan
+ *
+ * Parameters:
+ *	ropeNode* root
+ *		-A pointer to a ropeNode whose string represents the
+ *		 text to scanned
+ *		-May be NULL
+ *
+ * Return Type:
+ *	int
+ *		-The length of a given ropeNode's string length
+ */
+int stringLength(ropeNode* root){
+	//Check if given root node is NULL
+	if(root == NULL){
+		return 0;
+	}
+	//If root has children, recurse down it
+	if(root->string == NULL){
+		return stringLength(root->left) + stringLength(root->right);
+	}
+	//If root has a string, return its length
+	return root->weight;
+}
+
+/*
  * concatenate Function Definition
  * --------------------------------
  * Function Summary:
@@ -111,14 +141,28 @@ ropeNode* makeRopeNode(char* words){
  *		 two parts of a newly concatenated string
  */
 
-//TODO: SET WEIGHT, RAISE WARNING IF EITHER ARE NULL, ENSURE ALL CHILDREN ARE FULL
+//TODO: ENSURE ALL CHILDREN ARE FULL (BALANCE/REBALANCE)
 ropeNode* concatenate(ropeNode* left, ropeNode* right){
+	//Check for NULL node cases
+	if(left == NULL && right != NULL){
+		return right;
+	}
+	else if(left != NULL && right == NULL){
+		return left;
+	}
+	else if(left == NULL && right == NULL){
+		return NULL;
+	}
+
 	//Create new parent node to attach children to
 	ropeNode* newParent = makeRopeNode(NULL);
 
 	//Sets newParent's left and right children
 	newParent->left = left;
 	newParent->right = right;
+
+	//Sets newParent's weight by getting string length of left child
+	newParent->weight = stringLength(newParent->left);
 
 	//Return newParent
 	return newParent;
@@ -158,36 +202,6 @@ char characterAt(ropeNode* root, int position){
 
 	//Return char at given position
 	return root->string[position];
-}
-
-/*
- * stringLength Function Definition
- * --------------------------------
- * Function Summary:
- *	-Gets the length of the string held in the leaves of a given ropeNode
- *	-Should only be called on the left child of a ropeNode to start scan
- *
- * Parameters:
- *	ropeNode* root
- *		-A pointer to a ropeNode whose string represents the
- *		 text to scanned
- *		-May be NULL
- *
- * Return Type:
- *	int
- *		-The length of a given ropeNode's string length
- */
-int stringLength(ropeNode* root){
-	//Check if given root node is NULL
-	if(root == NULL){
-		return 0;
-	}
-	//If root has children, recurse down it
-	if(root->string == NULL){
-		return stringLength(root->left) + stringLength(root->right);
-	}
-	//If root has a string, return its length
-	return root->weight;
 }
 
 /*
