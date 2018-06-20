@@ -110,10 +110,11 @@ int stringLength(ropeNode* root){
 }
 
 /*
- * isBalanced Function Definition
+ * getBalance Function Definition
  * --------------------------------
  * Function Summary:
- *	Checks if a series of ropeNodes is balanced
+ *	Determines balance of rope defined as the absolute difference in height
+ *	between left and right sub-trees being no greater than one
  *		-A rope is balanced if every ropeNode has either two or no children
  *
  * Parameters:
@@ -124,20 +125,35 @@ int stringLength(ropeNode* root){
  *
  * Return Type:
  *	int
- *		-1 if balanced
- *		-0 if unbalanced
+ *		-Height of tree if balanced
+ *		-(-1) if unbalanced
  */
-int isBalanced(ropeNode* root){
-	if((root->left == NULL && root->right == NULL) || root == NULL){
-		return 1;
-	}
-	else if(root->left != NULL && root->right == NULL){
+int getBalance(ropeNode* root){
+	//Check if root is NULL
+	if(root == NULL){
 		return 0;
 	}
-	else if(root->left == NULL && root->right != NULL){
-		return 0;
+
+	//Check that left subtree is balanced
+	int leftSubtreeHeight = getBalance(root->left);
+	if(leftSubtreeHeight == -1){
+		return -1;
 	}
-	return isBalanced(root->left) & isBalanced(root->right);
+
+	//Check that right subtree is balanced
+	int rightSubtreeHeight = getBalance(root->right);
+	if(rightSubtreeHeight == -1){
+		return -1;
+	}
+
+	//Check if full subtree of root is balanced
+	if(-1*(leftSubtreeHeight - rightSubtreeHeight) > 0){
+		return -1;
+	}
+
+	//Get larger height between two subtrees and increment
+	int balanceDifference = leftSubtreeHeight > rightSubtreeHeight ? leftSubtreeHeight+1 : rightSubtreeHeight+1;
+	return balanceDifference+1;
 }
 
 /*
@@ -173,23 +189,22 @@ int isBalanced(ropeNode* root){
 
 //TODO: ENSURE ALL CHILDREN ARE FULL (BALANCE/REBALANCE)
 ropeNode* concatenate(ropeNode* left, ropeNode* right){
-	//Check for NULL node cases
-	if(left == NULL && right != NULL){
-		return right;
-	}
-	else if(left != NULL && right == NULL){
-		return left;
-	}
-	else if(left == NULL && right == NULL){
+	//Check if both nodes are NULL
+	if(left == NULL && right == NULL){
 		return NULL;
 	}
 
 	//Create new parent node to attach children to
 	ropeNode* newParent = makeRopeNode(NULL);
 
-	//Sets newParent's left and right children
-	newParent->left = left;
-	newParent->right = right;
+	//Sets newParent's right and left nodes
+	if(left == NULL){
+		newParent->left = right;
+	}
+	else{
+		newParent->left = left;
+		newParent->right = right;
+	}
 
 	//Sets newParent's weight by getting string length of left child
 	newParent->weight = stringLength(newParent->left);
