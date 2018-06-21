@@ -77,6 +77,36 @@ ropeNode* makeRopeNode(char* words){
 }
 
 /*
+ * stringLength Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	-Gets the length of the string held in the leaves of a given ropeNode
+ *	-Should only be called on the left child of a ropeNode to start scan
+ *
+ * Parameters:
+ *	ropeNode* root
+ *		-A pointer to a ropeNode whose string represents the
+ *		 text to scanned
+ *		-May be NULL
+ *
+ * Return Type:
+ *	int
+ *		-The length of a given ropeNode's string length
+ */
+int stringLength(ropeNode* root){
+	//Check if given root node is NULL
+	if(root == NULL){
+		return 0;
+	}
+	//If root has children, recurse down it
+	if(root->string == NULL){
+		return stringLength(root->left) + stringLength(root->right);
+	}
+	//If root has a string, return its length
+	return root->weight;
+}
+
+/*
  * concatenate Function Definition
  * --------------------------------
  * Function Summary:
@@ -148,36 +178,6 @@ ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	//Return newParent
 	return newParent;
 };
-
-/*
- * stringLength Function Definition
- * --------------------------------
- * Function Summary:
- *	-Gets the length of the string held in the leaves of a given ropeNode
- *	-Should only be called on the left child of a ropeNode to start scan
- *
- * Parameters:
- *	ropeNode* root
- *		-A pointer to a ropeNode whose string represents the
- *		 text to scanned
- *		-May be NULL
- *
- * Return Type:
- *	int
- *		-The length of a given ropeNode's string length
- */
-int stringLength(ropeNode* root){
-	//Check if given root node is NULL
-	if(root == NULL){
-		return 0;
-	}
-	//If root has children, recurse down it
-	if(root->string == NULL){
-		return stringLength(root->left) + stringLength(root->right);
-	}
-	//If root has a string, return its length
-	return root->weight;
-}
 
 /*
  * isBalanced Function Definition
