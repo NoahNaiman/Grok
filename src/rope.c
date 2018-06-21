@@ -110,7 +110,7 @@ int stringLength(ropeNode* root){
 }
 
 /*
- * getBalance Function Definition
+ * isBalanced Function Definition
  * --------------------------------
  * Function Summary:
  *	Determines balance of rope defined as the absolute difference in height
@@ -128,20 +128,20 @@ int stringLength(ropeNode* root){
  *		-Height of tree if balanced
  *		-(-1) if unbalanced
  */
-int getBalance(ropeNode* root){
+int isBalanced(ropeNode* root){
 	//Check if root is NULL
 	if(root == NULL){
 		return 0;
 	}
 
 	//Check that left subtree is balanced
-	int leftSubtreeHeight = getBalance(root->left);
+	int leftSubtreeHeight = isBalanced(root->left);
 	if(leftSubtreeHeight == -1){
 		return -1;
 	}
 
 	//Check that right subtree is balanced
-	int rightSubtreeHeight = getBalance(root->right);
+	int rightSubtreeHeight = isBalanced(root->right);
 	if(rightSubtreeHeight == -1){
 		return -1;
 	}
@@ -151,7 +151,7 @@ int getBalance(ropeNode* root){
 		return -1;
 	}
 
-	//Get larger height between two subtrees and increment
+	//Get larger height between two subtrees and incremen
 	int balanceDifference = leftSubtreeHeight > rightSubtreeHeight ? leftSubtreeHeight+1 : rightSubtreeHeight+1;
 	return balanceDifference+1;
 }
