@@ -29,23 +29,12 @@
  *	ropeNode right
  *		-A pointer to this node's right child node
  */
-
 typedef struct Rope {
 	char *string;
 	int weight;
 	struct Rope *left;
 	struct Rope *right;
 } ropeNode;
-
-
-/*
- * CORE FUNCTIONS
- * --------------
- *	makeRopeNode
- *		-Create a new ropeNode
- *	concatenate
- *		-Concatenate two ropeNodes to create longer text
- */
 
 /*
  * makeRopeNode Function Definition
@@ -68,7 +57,6 @@ typedef struct Rope {
  *	ropeNode*
  *		-A newly created rope node with no children
  */
-
 ropeNode* makeRopeNode(char* words){
 
 	//Allocate space for new ropeNode
@@ -88,7 +76,78 @@ ropeNode* makeRopeNode(char* words){
 	return(newNode);
 }
 
-//UTILITY FUNCTIONS
+/*
+ * concatenate Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Concatenates a string by creating a new parent ropeNode
+ *		-Sets newParent's left child to what should
+ *		 be the former part of the new string
+ *		-Sets newParent's right child to what should be the
+ *		 latter part of the new string
+ *		-Sets newParent's *string to NULL
+ *		-Sets newParent's weight to the length of the string
+ *		 in its left subtree
+ *
+ * Parameters:
+ *	ropeNode* left
+ *		-A pointer to a ropeNode whose string represents the
+ *		 former part of some text
+ *		-Should not be NULL as this could cause unintended
+ *		 side effects
+ *	ropeNode* right
+ *		-A pointer to a ropeNode whose string represents the
+ *		 latter part of some text
+ *		-Should not be NULL as this could cause unintended
+ *		 side effects
+ *
+ * Return Type:
+ *	ropeNode*
+ *		-A newly created rope node whose children represent
+ *		 two parts of a newly concatenated string
+ */
+ropeNode* concatenate(ropeNode* left, ropeNode* right){
+	//Check if both nodes are NULL
+	if(left == NULL && right == NULL){
+		return NULL;
+	}
+
+	//If either node has an empty space, add node there
+	if(left->string == NULL){
+		if(left->right == NULL){
+			left->right = right;
+			return left;
+		}
+	}
+	else if(right->string == NULL){
+		if(right->right == NULL){
+			right->right = right;
+			right->left = left;
+			return right;
+		}
+	}
+
+	//Create new parent node to attach children to
+	ropeNode* newParent = makeRopeNode(NULL);
+
+	//Sets newParent's right and left nodes
+	if(left == NULL){
+		newParent->left = right;
+	}
+	else{
+		//Rebalance tree inserted under newParent
+		newParent->left = left->left;
+		newParent->right = left;
+		newParent->right->left = right->right;
+		newParent->right->right = right;
+	}
+
+	//Sets newParent's weight by getting string length of left child
+	newParent->weight = stringLength(newParent->left);
+
+	//Return newParent
+	return newParent;
+};
 
 /*
  * stringLength Function Definition
@@ -166,80 +225,6 @@ int isBalanced(ropeNode* root){
 	int balanceDifference = leftSubtreeHeight > rightSubtreeHeight ? leftSubtreeHeight+1 : rightSubtreeHeight+1;
 	return balanceDifference+1;
 }
-
-/*
- * concatenate Function Definition
- * --------------------------------
- * Function Summary:
- *	Concatenates a string by creating a new parent ropeNode
- *		-Sets newParent's left child to what should
- *		 be the former part of the new string
- *		-Sets newParent's right child to what should be the
- *		 latter part of the new string
- *		-Sets newParent's *string to NULL
- *		-Sets newParent's weight to the length of the string
- *		 in its left subtree
- *
- * Parameters:
- *	ropeNode* left
- *		-A pointer to a ropeNode whose string represents the
- *		 former part of some text
- *		-Should not be NULL as this could cause unintended
- *		 side effects
- *	ropeNode* right
- *		-A pointer to a ropeNode whose string represents the
- *		 latter part of some text
- *		-Should not be NULL as this could cause unintended
- *		 side effects
- *
- * Return Type:
- *	ropeNode*
- *		-A newly created rope node whose children represent
- *		 two parts of a newly concatenated string
- */
-
-ropeNode* concatenate(ropeNode* left, ropeNode* right){
-	//Check if both nodes are NULL
-	if(left == NULL && right == NULL){
-		return NULL;
-	}
-
-	//If either node has an empty space, add node there
-	if(left->string == NULL){
-		if(left->right == NULL){
-			left->right = right;
-			return left;
-		}
-	}
-	else if(right->string == NULL){
-		if(right->right == NULL){
-			right->right = right;
-			right->left = left;
-			return right;
-		}
-	}
-
-	//Create new parent node to attach children to
-	ropeNode* newParent = makeRopeNode(NULL);
-
-	//Sets newParent's right and left nodes
-	if(left == NULL){
-		newParent->left = right;
-	}
-	else{
-		//Rebalance tree inserted under newParent
-		newParent->left = left->left;
-		newParent->right = left;
-		newParent->right->left = right->right;
-		newParent->right->right = right;
-	}
-
-	//Sets newParent's weight by getting string length of left child
-	newParent->weight = stringLength(newParent->left);
-
-	//Return newParent
-	return newParent;
-};
 
 /*
  * characterAt Function Definition
