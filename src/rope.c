@@ -1,7 +1,7 @@
 #include<string.h>
 #include<stdio.h>
 #include<stdlib.h>
-//TODO: CUT FUNCTION
+#define MAXQUEUESIZE 1000
 
 /*
  * Rope Definition
@@ -37,6 +37,15 @@ typedef struct Rope {
 	struct Rope *right;
 } ropeNode;
 
+
+/*
+ * CORE FUNCTIONS
+ * --------------
+ *	makeRopeNode
+ *		-Create a new ropeNode
+ *	concatenate
+ *		-Concatenate two ropeNodes to create longer text
+ */
 
 /*
  * makeRopeNode Function Definition
@@ -78,6 +87,8 @@ ropeNode* makeRopeNode(char* words){
 	//Return newly constructed
 	return(newNode);
 }
+
+//UTILITY FUNCTIONS
 
 /*
  * stringLength Function Definition
@@ -156,6 +167,10 @@ int isBalanced(ropeNode* root){
 	return balanceDifference+1;
 }
 
+void balance(ropeNode* root){
+
+}
+
 /*
  * concatenate Function Definition
  * --------------------------------
@@ -187,11 +202,25 @@ int isBalanced(ropeNode* root){
  *		 two parts of a newly concatenated string
  */
 
-//TODO: ENSURE ALL CHILDREN ARE FULL (BALANCE/REBALANCE)
 ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	//Check if both nodes are NULL
 	if(left == NULL && right == NULL){
 		return NULL;
+	}
+
+	//If either node has an empty space, add node there
+	if(left->string == NULL){
+		if(left->right == NULL){
+			left->right = right;
+			return left;
+		}
+	}
+	else if(right->string == NULL){
+		if(right->right == NULL){
+			right->right = right;
+			right->left = left;
+			return right;
+		}
 	}
 
 	//Create new parent node to attach children to
