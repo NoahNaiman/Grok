@@ -167,10 +167,6 @@ int isBalanced(ropeNode* root){
 	return balanceDifference+1;
 }
 
-void balance(ropeNode* root){
-
-}
-
 /*
  * concatenate Function Definition
  * --------------------------------
@@ -231,8 +227,11 @@ ropeNode* concatenate(ropeNode* left, ropeNode* right){
 		newParent->left = right;
 	}
 	else{
-		newParent->left = left;
-		newParent->right = right;
+		//Rebalance tree inserted under newParent
+		newParent->left = left->left;
+		newParent->right = left;
+		newParent->right->left = right->right;
+		newParent->right->right = right;
 	}
 
 	//Sets newParent's weight by getting string length of left child
