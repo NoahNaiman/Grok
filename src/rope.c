@@ -1,7 +1,8 @@
 #include<string.h>
 #include<stdio.h>
 #include<stdlib.h>
-#define MAXQUEUESIZE 1000
+
+#define MAX_STRING_LENGTH 128
 
 /*
  * Rope Definition
@@ -107,6 +108,32 @@ int stringLength(ropeNode* root){
 }
 
 /*
+ * stringConcatenate Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	-A utility function to concatenate two strings into dest
+ *
+ * Parameters:
+ *	char* dest
+ *		-A pointer to an array of chars to write
+ *		-May not be NULL
+ *	char* src
+ *		-A pointer to an array of chars to write to dest
+ *		-May not be NULL
+ *
+ * Return Type:
+ *	char*
+ *		-A pointer to the newly concatenated string
+ */
+char* stringConcatenate(char* dest, char* src){
+	while(*dest){
+		dest++;
+	}
+	while((*dest++ = *src++));
+	return --dest;
+}
+
+/*
  * concatenate Function Definition
  * --------------------------------
  * Function Summary:
@@ -123,12 +150,12 @@ int stringLength(ropeNode* root){
  *	ropeNode* left
  *		-A pointer to a ropeNode whose string represents the
  *		 former part of some text
- *		-Should not be NULL as this could cause unintended
+ *		-Should never be NULL as this could cause unintended
  *		 side effects
  *	ropeNode* right
  *		-A pointer to a ropeNode whose string represents the
  *		 latter part of some text
- *		-Should not be NULL as this could cause unintended
+ *		-Should never be NULL as this could cause unintended
  *		 side effects
  *
  * Return Type:
@@ -137,30 +164,34 @@ int stringLength(ropeNode* root){
  *		 two parts of a newly concatenated string
  */
 ropeNode* concatenate(ropeNode* left, ropeNode* right){
-	//Check if both nodes are NULL
-	if(left == NULL && right == NULL){
-		return NULL;
+	//Check if both are short leaf nodes
+	if(left->string != NULL && right->string != NULL){
+		if(strlen(left->string) + strlen(right->string) <= MAX_STRING_LENGTH){
+			char newString[MAX_STRING_LENGTH];
+			char *newStringPointer = newString;
+			newStringPointer = stringConcatenate(newStringPointer, left->string);
+			newStringPointer = stringConcatenate(newStringPointer, right->string);
+			free(right);
+			left->string = newString;
+			return left;
+		}
 	}
 
 	//If either node has an empty space, add node there
-	if(left != NULL && left->string == NULL){
-		if(left->left == NULL){
-			left->left = right;
-			return left;
-		}
-		else if(left->right == NULL){
+	if(left->string == NULL){
+		if(left->right == NULL){
 			left->right = right;
 			return left;
 		}
-	}
-	else if(right != NULL && right->string == NULL){
-		if(right->left == NULL){
-			right->left = left;
-			return right;
-		}
-		else if(right->right == NULL){
-			right->right = left;
-			return right;
+		else if(left->right->string != NULL && right->string != NULL){
+			if(strlen(left->right->string) + strlen(right->string) <= MAX_STRING_LENGTH){
+				ropeNode* temp = concatenate(left->right, right);
+				left->left = concatenate(left->left, temp);
+				return left;
+			}
+			else{
+				left = left->right;
+			}
 		}
 	}
 
@@ -168,14 +199,8 @@ ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	ropeNode* newParent = makeRopeNode(NULL);
 
 	//Sets newParent's right and left nodes
-	if(left == NULL){
-		newParent->left = right;
-	}
-	else{
-		//Rebalance tree inserted under newParent
-		newParent->left = left;
-		newParent->right = right;
-	}
+	newParent->left = left;
+	newParent->right = right;
 
 	//Sets newParent's weight by getting string length of left child
 	newParent->weight = stringLength(newParent->left);
