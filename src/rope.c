@@ -143,16 +143,23 @@ ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	}
 
 	//If either node has an empty space, add node there
-	if(left->string == NULL){
-		if(left->right == NULL){
+	if(left != NULL && left->string == NULL){
+		if(left->left == NULL){
+			left->left = right;
+			return left;
+		}
+		else if(left->right == NULL){
 			left->right = right;
 			return left;
 		}
 	}
-	else if(right->string == NULL){
-		if(right->right == NULL){
-			right->right = right;
+	else if(right != NULL && right->string == NULL){
+		if(right->left == NULL){
 			right->left = left;
+			return right;
+		}
+		else if(right->right == NULL){
+			right->right = left;
 			return right;
 		}
 	}
@@ -166,10 +173,8 @@ ropeNode* concatenate(ropeNode* left, ropeNode* right){
 	}
 	else{
 		//Rebalance tree inserted under newParent
-		newParent->left = left->left;
-		newParent->right = left;
-		newParent->right->left = right->right;
-		newParent->right->right = right;
+		newParent->left = left;
+		newParent->right = right;
 	}
 
 	//Sets newParent's weight by getting string length of left child
