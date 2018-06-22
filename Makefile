@@ -1,10 +1,10 @@
-#Makefile to build and compile nate text editor
+#Makefile to build and compile Grok text editor
 
 CC = gcc
 CFLAGS = -c -Wall
 SOURCES = $(wildcard src/*.c)
 OBJECTS = $(SOURCES:.c=.o)
-EXECUTABLE = bin/rope
+EXECUTABLE = bin/pieceChain
 
 all: $(SOURCES) $(EXECUTABLE)
 
