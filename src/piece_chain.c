@@ -96,16 +96,22 @@
  * 	A span of English text
  */
 typedef struct{
-
 	char *original;
 	char *add;
 	int pieces[BUFFER_SIZE][3];
-
 } piece_chain_t;
 
-// piece_chain* init_piece_chain(char* file_name){
+piece_chain* init_piece_chain(piece_chain_t chain, char* file_name){
+	FILE *file_pointer = fopen(file_name, "r");
+	if(file_pointer == -1){
+		perror("Error opening file for reading");
+		exit(EXIT_FAILURE);
+	}
+	else{
+		size_t length_read = fread(chain->original, sizeof(char), BUFFER_SIZE, file_pointer);
+	}
 
-// }
+}
 
 int main() {
 	return 1;
