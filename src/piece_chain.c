@@ -2,7 +2,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#ifndef BUFFR_SIZE
+#ifndef BUFFER_SIZE
 #define BUFFER_SIZE 1024
 #endif
 
@@ -17,7 +17,7 @@
  *	piece is in, its start index, and its length.
  *
  * Typdef:
- *	pieceChain
+ *	piece_chain_t
  *
  * Values:
  *	char *original;
@@ -31,6 +31,8 @@
  *		-A 1024 by 3 matrix where each row represnts
  *		 one piece.
  *		-pieces[n][0] holds which matrix is being used
+ *			--0 if original
+ *			--1 if add
  *		-pieces[n][1] states the start of the current piece
  *		-pieces[n][2] states the length of the current piece
  *
@@ -93,4 +95,19 @@
  *
  * 	A span of English text
  */
+typedef struct{
+
+	char *original;
+	char *add;
+	int pieces[BUFFER_SIZE][3];
+
+} piece_chain_t;
+
+// piece_chain* init_piece_chain(char* file_name){
+
+// }
+
+int main() {
+	return 1;
+}
 
