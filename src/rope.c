@@ -2,23 +2,21 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define MAX_STRING_LENGTH 128
-
 /*
  * Rope Definition
  * ---------------
  * Summary:
- *	A special case of a binary tree wherein each leaf
- *	contain a string. The weight of each node is the
- * 	length of its string if a leaf, and the total weight
+ *	A binary tree wherein each leaf contains a string
+ *	representing one word. The weight of each node is
+ *	the length of its word if a leaf, and the total weight
  *	of all leaves in its left subtree if not.
  *
  * Typdef:
  *	ropeNode
  *
  * Values:
- *	char string[]
- *		-Leaf: Characters representing some portion of text
+ *	char word[]
+ *		-Leaf: Characters representing a single word of text
  *		-Non-leaf: NULL
  *
  *	int weight
@@ -31,7 +29,7 @@
  *		-A pointer to this node's right child node
  */
 typedef struct Rope {
-	char *string;
+	char *word;
 	int weight;
 	struct Rope *left;
 	struct Rope *right;
@@ -58,16 +56,16 @@ typedef struct Rope {
  *	ropeNode*
  *		-A newly created rope node with no children
  */
-ropeNode* makeRopeNode(char* words){
+ropeNode* makeRopeNode(char* string){
 
 	//Allocate space for new ropeNode
 	ropeNode* newNode = (ropeNode*)malloc(sizeof(ropeNode));
 	
-	//Assign given words to newNode
-	newNode->string = words;
+	//Assign given string to newNode
+	newNode->word = string;
 
 	//Assign weight to newNode, zero if words is NULL
-	newNode->weight = !words ? strlen(words) : 0;
+	newNode->weight = !string ? strlen(string) : 0;
 
 	//Set newNode's children as NULL
 	newNode->left = NULL;
@@ -92,7 +90,7 @@ ropeNode* makeRopeNode(char* words){
  *
  * Return Type:
  *	int
- *		-The length of a given ropeNode's string length
+ *		-The length of a given ropeNode's word
  */
 int stringLength(ropeNode* root){
 	//Check if given root node is NULL
@@ -100,10 +98,10 @@ int stringLength(ropeNode* root){
 		return 0;
 	}
 	//If root has children, recurse down it
-	if(root->string == NULL){
+	if(root->word == NULL){
 		return stringLength(root->left) + stringLength(root->right);
 	}
-	//If root has a string, return its length
+	//If root has a word, return its length
 	return root->weight;
 }
 
@@ -142,7 +140,7 @@ char* stringConcatenate(char* dest, char* src){
  *		 be the former part of the new string
  *		-Sets newParent's right child to what should be the
  *		 latter part of the new string
- *		-Sets newParent's *string to NULL
+ *		-Sets newParent's *word to NULL
  *		-Sets newParent's weight to the length of the string
  *		 in its left subtree
  *
@@ -164,34 +162,11 @@ char* stringConcatenate(char* dest, char* src){
  *		 two parts of a newly concatenated string
  */
 ropeNode* concatenate(ropeNode* left, ropeNode* right){
-	//Check if both are short leaf nodes
-	if(left->string != NULL && right->string != NULL){
-		if(strlen(left->string) + strlen(right->string) <= MAX_STRING_LENGTH){
-			char newString[MAX_STRING_LENGTH];
-			char *newStringPointer = newString;
-			newStringPointer = stringConcatenate(newStringPointer, left->string);
-			newStringPointer = stringConcatenate(newStringPointer, right->string);
-			free(right);
-			left->string = newString;
-			return left;
-		}
-	}
-
 	//If either node has an empty space, add node there
-	if(left->string == NULL){
+	if(left->word == NULL){
 		if(left->right == NULL){
 			left->right = right;
 			return left;
-		}
-		else if(left->right->string != NULL && right->string != NULL){
-			if(strlen(left->right->string) + strlen(right->string) <= MAX_STRING_LENGTH){
-				ropeNode* temp = concatenate(left->right, right);
-				left->left = concatenate(left->left, temp);
-				return left;
-			}
-			else{
-				left = left->right;
-			}
 		}
 	}
 
@@ -289,7 +264,7 @@ char characterAt(ropeNode* root, int position){
 	}
 
 	//Return char at given position
-	return root->string[position];
+	return root->word[position];
 }
 
 /*
@@ -310,8 +285,8 @@ void printString(ropeNode* root){
 		return;
 	}
 	//Check if node has a string to print, only leaves will
-	if(root->string != NULL){
-		printf("%s", root->string);
+	if(root->word != NULL){
+		printf("%s", root->word);
 	}
 	//Recurse down tree
 	printString(root->left);
