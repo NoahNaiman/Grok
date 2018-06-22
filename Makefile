@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS = -c -Wall
 SOURCES = $(wildcard src/*.c)
 OBJECTS = $(SOURCES:.c=.o)
-EXECUTABLE = bin/pieceChain
+EXECUTABLE = bin/pieceTable
 
 all: $(SOURCES) $(EXECUTABLE)
 
