@@ -162,7 +162,7 @@ char* stringConcatenate(char* dest, char* src){
  *		 two parts of a newly concatenated string
  */
 ropeNode* concatenate(ropeNode* left, ropeNode* right){
-	//If either node has an empty space, add node there
+	//If left node has an empty space, add right node there
 	if(left->word == NULL){
 		if(left->right == NULL){
 			left->right = right;
