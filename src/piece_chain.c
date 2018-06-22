@@ -3,7 +3,7 @@
 #include<stdlib.h>
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 #endif
 
 /* Piece Chain Definition
@@ -98,17 +98,24 @@
 typedef struct{
 	char *original;
 	char *add;
-	int pieces[BUFFER_SIZE][3];
+	int pieces[BUFFER_SIZE+1][3];
 } piece_chain_t;
 
-piece_chain* init_piece_chain(piece_chain_t chain, char* file_name){
+void init_piece_chain(piece_chain_t* chain, char* file_name){
 	FILE *file_pointer = fopen(file_name, "r");
-	if(file_pointer == -1){
+	if(file_pointer == NULL){
 		perror("Error opening file for reading");
 		exit(EXIT_FAILURE);
 	}
 	else{
 		size_t length_read = fread(chain->original, sizeof(char), BUFFER_SIZE, file_pointer);
+		if(ferror(file_pointer) != 0){
+
+		}
+		else{
+			chain->original[length_read++] = '\0';
+		}
+		fclose(file_pointer);
 	}
 
 }
