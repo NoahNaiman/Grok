@@ -9,4 +9,4 @@ align="center">
 	<strong>Don't just write code. Grok it.</strong>
 </div>
 
-# Grok will be a next generation text editor, so stay tuned for updates!
+# Grok is a next generation text editor, so stay tuned for updates!
