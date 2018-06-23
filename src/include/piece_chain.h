@@ -98,79 +98,63 @@ typedef struct{
 } PieceChain_t;
 
 /*
- * get_original_size Function Definition
+ * init_piece_chain Usage
  * --------------------------------
- * Function Summary:
- *	Get the size in bytes of a given text file
+ * Initialize a PieceChain_t by reading in a given
+ * file and assigning all necessary fields
  *
- * Parameters:
- *	FILE* fileDescriptor
- *		-A pointer to a file
- *		-May not be NULL
+ * Example:
+ *	PieceChain_t aNewPieceChain = init_piece_chain(aFileName);
+ *	-aFileName = an array of chars representing either an existing 
+ *	 file or one to be created
+ */
+PieceChain_t* init_piece_chain(char* fileName);
+
+/*
+ * record_piece Usage
+ * --------------------------------
+ * Record necessary information about a part of text
+ * in the pieces buffer of a PieceChain_t
  *
- * Return Type:
- *	int fileLength
- *		-The length of the given file in bytes
+ * Example:
+ *	record_piece(anExistingPieceChain_t, originalOrAdd, startPoint, lengthOfPiece);
+ *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
+ *	-originalOrAdd = 0 if original buffer, 1 if add buffer
+ *	-startPoint = recorded piece's start index
+ *	-lengthOfPiece = recorded piece's length
+ */
+void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length);
+
+/*
+ * get_original_size Usage
+ * --------------------------------
+ * Get the unedited size of a file
+ *
+ * Example:
+ *	printf("The size of the file is: %d\n", get_original_size(fileDescriptor));
+ *	-fileDescriptor = a non-NULL FILE pointer
  */
 int get_original_size(FILE* fileDescriptor);
 
 /*
- * get_current_size Function Definition
+ * get_current_size Usage
  * --------------------------------
- * Function Summary:
- *	Get the size in bytes of the current text
+ * Get the size of a file during or after edits
  *
- * Parameters:
- *	PieceChain_t* chain
- *		-A pointer to the PieceChain_t recording info for
- *		 the current text
- *		-May not be NULL
- *
- * Return Type:
- *	int currentLength
- *		-The current length of the text being edited
+ * Example:
+ *	printf("The current size of the file is: %d\n", get_current_size(anExistingPieceChain_t));
+ *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
  */
 int get_current_length(PieceChain_t* chain);
 
 /*
- * record_piece Function Definition
+ * print_chain Usage
  * --------------------------------
- * Function Summary:
- *	Records necessary information on a given piece in chain's
- *	pieces buffer
- *		-Records which buffer is being pointed to in pieces[n][0]
- *		-Records starting point of piece in pieces[n][1]
- *		-Records length of piece in pieces[n][2]
+ * Print some text as recorded by a given PieceChain_t
  *
- * Parameters:
- *	PieceChain_t* chain
- *		-A pointer to the PieceChain_t whose pieces buffer will
- *		 hold the recorded information
- *		-May not be NULL
- *	int whichBuffer
- *		-An integer representing buffer the recorded piece is in
- *		-0 if original
- *		-1 if add
- *	int start
- *		-An integer representing the start point of recorded piece
- *
- *	int whichBuffer
- *		-An integer representing the recorded piece's length
- */
-void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length);
-
-PieceChain_t* init_piece_chain(char* fileName);
-
-/*
- * print_chain Function Definition
- * --------------------------------
- * Function Summary:
- *	Print the recorded text to standard output
- *
- * Parameters:
- *	PieceChain_t* chain
- *		-A pointer to a PieceChain_t
- *		-May not be NULL
+ * Example:
+ *	print_chain(anExistingPieceChain_t)
+ *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
  */
 void print_chain(PieceChain_t* chain);
 

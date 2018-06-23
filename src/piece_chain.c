@@ -8,8 +8,8 @@
 #define BUFFERSIZE 494848
 #endif
 
-/* CORE FUNCTIONS */
 
+/* CORE FUNCTIONS */
 
 PieceChain_t* init_piece_chain(char* fileName){
 
