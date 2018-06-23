@@ -3,7 +3,7 @@
 #include<stdlib.h>
 
 #ifndef BUFFERSIZE
-#define BUFFERSIZE 4096
+#define BUFFERSIZE 61856
 #endif
 
 /* Piece Chain Definition
@@ -162,24 +162,26 @@ void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
 	chain->pieces[i][2] = length;
 }
 
-//TODO: WORK ON NULL FILE NAMES
 PieceChain_t* init_piece_chain(char* fileName){
 
 	PieceChain_t*  newChain = (PieceChain_t *)malloc(sizeof(PieceChain_t));
+
+	int i;
+	newChain->pieces = (int **)malloc(BUFFERSIZE * sizeof(int *));
+	for(i=0; i < BUFFERSIZE; i++){
+		newChain->pieces[i] = (int *)malloc(3 * sizeof(int));
+	}
 	
 	FILE *fileDescriptor = fopen(fileName, "rb");
 
 	if(fileDescriptor == NULL){
-		perror("Error");
-		exit(EXIT_FAILURE);
+		
+		newChain->original = (char *)malloc(BUFFERSIZE * sizeof(char));
+		record_piece(newChain, 0, 0, 0);
+
+		newChain->add = (char *)malloc(BUFFERSIZE * sizeof(char));
 	}
 	else{
-		int i;
-		newChain->pieces = (int **)malloc(BUFFERSIZE * sizeof(int *));
-		for(i=0; i < BUFFERSIZE; i++){
-			newChain->pieces[i] = (int *)malloc(3 * sizeof(int));
-		}
-
 		int fileLength = get_file_size(fileDescriptor);
 		newChain->original = (char *)malloc(fileLength * sizeof(char));
 
@@ -196,7 +198,7 @@ PieceChain_t* init_piece_chain(char* fileName){
 }
 
 int main() {
-	PieceChain_t *myChain = init_piece_chain("obsolete/roped.c");
+	PieceChain_t *myChain = init_piece_chain("obsolete/rope.c");
 	printf("%s\n", myChain->original);
 	return 1;
 }
