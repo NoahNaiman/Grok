@@ -154,64 +154,44 @@ int get_file_size(FILE* fileDescriptor){
  *		-A newly created rope node with no children
  */
 void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
-	//Search for first free space in given piece chain's table
 	int i = 0;
 	for(; chain->pieces[i][2] != 0; i++);
 
-	//Record which buffer the piece is in
 	chain->pieces[i][0] = whichBuffer;
-
-	//Record where the piece starts in the buffer
 	chain->pieces[i][1] = start;
-
-	//Record length of piece
 	chain->pieces[i][2] = length;
 }
 
 //TODO: WORK ON NULL FILE NAMES
 PieceChain_t* init_piece_chain(char* fileName){
 
-	//Create new piece chain
 	PieceChain_t*  newChain = (PieceChain_t *)malloc(sizeof(PieceChain_t));
-
-	//Open file for reading
+	
 	FILE *fileDescriptor = fopen(fileName, "rb");
 
-	//Check that file exists
 	if(fileDescriptor == NULL){
-		//If file does not exist exit with error.
 		perror("Error");
 		exit(EXIT_FAILURE);
 	}
 	else{
-		//Malloc space for pieces[BUFFERSIZE][3]
 		int i;
 		newChain->pieces = (int **)malloc(BUFFERSIZE * sizeof(int *));
 		for(i=0; i < BUFFERSIZE; i++){
 			newChain->pieces[i] = (int *)malloc(3 * sizeof(int));
 		}
 
-		//Malloc space for original as size of file
 		int fileLength = get_file_size(fileDescriptor);
 		newChain->original = (char *)malloc(fileLength * sizeof(char));
 
-		//Read in file as chain's original
 		size_t lengthRead = fread(newChain->original, sizeof(char), fileLength, fileDescriptor);
-		
-		//Add null terminating byte to original
 		newChain->original[lengthRead++] = '\0';
 
-		//Close file
 		fclose(fileDescriptor);
 
-		//Add info to new_chain's table
 		record_piece(newChain, 0, 0, lengthRead);
 
-		//Malloc space for add as size of original file
 		newChain->add = (char *)malloc(fileLength * sizeof(char));
 	}
-
-	//Return piece chain
 	return newChain;
 }
 
