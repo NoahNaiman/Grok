@@ -6,7 +6,7 @@ align="center">
 </div>
 
 <div align="center">
-	<strong>Don't just write code. Grok it.</strong>
+	*Don't just write code: Grok it.*
 </div>
 
-# Grok is a next generation text editor, so stay tuned for updates!
+# Grok is a text editor, so stay tuned for updates!

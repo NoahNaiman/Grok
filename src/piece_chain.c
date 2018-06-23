@@ -80,6 +80,30 @@ void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
 	chain->pieces[i][2] = length;
 }
 
+/*
+ * print_chain Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Print the recorded text to standard output
+ *
+ * Parameters:
+ *	PieceChain_t* chain
+ *		-A pointer to a PieceChain_t
+ *		-May not be NULL
+ */
+//TODO: MODIFY TO STORE OUTPUT
+void print_chain(PieceChain_t* chain){
+	int i = 0;
+	for(; chain->pieces[i][2] != 0; i++){
+		if(chain->pieces[i][0] == 0){
+			printf("%.*s", chain->pieces[i][2], &chain->original[chain->pieces[i][1]]);
+		}
+		else{
+			printf("%.*s", chain->pieces[i][2], &chain->add[chain->pieces[i][1]]);
+		}
+	}
+}
+
 /* UTILITY FUNCTIONS */
 
 /*
@@ -127,30 +151,6 @@ int get_current_length(PieceChain_t* chain){
 		currentLength += chain->pieces[i][2];
 	}
 	return currentLength;
-}
-
-/*
- * print_chain Function Definition
- * --------------------------------
- * Function Summary:
- *	Print the recorded text to standard output
- *
- * Parameters:
- *	PieceChain_t* chain
- *		-A pointer to a PieceChain_t
- *		-May not be NULL
- */
-//TODO: MODIFY TO STORE OUTPUT
-void print_chain(PieceChain_t* chain){
-	int i = 0;
-	for(; chain->pieces[i][2] != 0; i++){
-		if(chain->pieces[i][0] == 0){
-			printf("%.*s", chain->pieces[i][2], &chain->original[chain->pieces[i][1]]);
-		}
-		else{
-			printf("%.*s", chain->pieces[i][2], &chain->add[chain->pieces[i][1]]);
-		}
-	}
 }
 
 int main() {
