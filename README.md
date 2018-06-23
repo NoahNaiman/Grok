@@ -9,4 +9,4 @@ align="center">
 	<em>Don't just write code: <ins>Grok</ins> it</em>
 </div>
 
-# Grok is a text editor, so stay tuned for updates!
+# Grok is a text editor, stay tuned for updates!
