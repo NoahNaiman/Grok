@@ -2,8 +2,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#ifndef BUFFER_SIZE
-#define BUFFER_SIZE 4096
+#ifndef BUFFERSIZE
+#define BUFFERSIZE 4096
 #endif
 
 /* Piece Chain Definition
@@ -98,29 +98,67 @@
 typedef struct{
 	char *original;
 	char *add;
-	int pieces[BUFFER_SIZE+1][3];
-} piece_chain_t;
+	int **pieces;
+} PieceChain_t;
 
-void init_piece_chain(piece_chain_t* chain, char* file_name){
-	FILE *file_pointer = fopen(file_name, "r");
-	if(file_pointer == NULL){
+int get_file_size(FILE* fileDescriptor){
+	fseek(fileDescriptor, 0, SEEK_END);
+	int fileLength = ftell(fileDescriptor);
+	rewind(fileDescriptor);
+	return fileLength;
+}
+
+PieceChain_t* init_piece_chain(char* fileName){
+
+	//Create new piece chain
+	PieceChain_t*  newChain = (PieceChain_t *)malloc(sizeof(PieceChain_t));
+
+	//Open file for reading
+	FILE *fileDescriptor = fopen(fileName, "rb");
+
+	//Check that file exists
+	if(fileDescriptor == NULL){
+		//If file does not exist exit with error.
 		perror("Error opening file for reading");
 		exit(EXIT_FAILURE);
 	}
 	else{
-		size_t length_read = fread(chain->original, sizeof(char), BUFFER_SIZE, file_pointer);
-		if(ferror(file_pointer) != 0){
+		//Malloc space for pieces[BUFFERSIZE][3]
+		int i;
+		newChain->pieces = (int **)malloc(BUFFERSIZE * sizeof(int *));
+		for(i=0; i < BUFFERSIZE; i++){
+			newChain->pieces[i] = (int *)malloc(3 * sizeof(int));
+		}
 
-		}
-		else{
-			chain->original[length_read++] = '\0';
-		}
-		fclose(file_pointer);
+		//Malloc space for original as size of file
+		int fileLength = get_file_size(fileDescriptor);
+		newChain->original = (char *)malloc(fileLength * sizeof(char));
+
+		//Read in file as chain's original
+		size_t lengthRead = fread(newChain->original, sizeof(char), fileLength, fileDescriptor);
+		
+		//Add null terminating byte to original
+		newChain->original[lengthRead++] = '\0';
+
+		//Close file
+		fclose(fileDescriptor);
+
+		//Add info to new_chain's table
+		newChain->pieces[0][0] = 0;
+		newChain->pieces[0][1] = 0;
+		newChain->pieces[0][2] = lengthRead;
+
+		//Malloc space for add as size of original file
+		newChain->add = (char *)malloc(fileLength * sizeof(char));
 	}
 
+	//Return piece chain
+	return newChain;
 }
 
 int main() {
+	PieceChain_t *myChain = init_piece_chain("obsolete/rope.c");
+	printf("%s\n", myChain->original);
 	return 1;
 }
 
