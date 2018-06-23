@@ -3,7 +3,7 @@
 #include<stdlib.h>
 
 #ifndef BUFFERSIZE
-#define BUFFERSIZE 61856
+#define BUFFERSIZE 494848
 #endif
 
 /* 
