@@ -101,6 +101,22 @@ typedef struct{
 	int **pieces;
 } PieceChain_t;
 
+
+/*
+ * get_file_size Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Get the size in bytes of a given text file
+ *
+ * Parameters:
+ *	FILE* fileDescriptor
+ *		-A pointer to a file
+ *		-May not be NULL
+ *
+ * Return Type:
+ *	fileLength
+ *		-The length of the given file in bytes
+ */
 int get_file_size(FILE* fileDescriptor){
 	fseek(fileDescriptor, 0, SEEK_END);
 	int fileLength = ftell(fileDescriptor);
@@ -108,6 +124,51 @@ int get_file_size(FILE* fileDescriptor){
 	return fileLength;
 }
 
+/*
+ * record_piece Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Records necessary information on a given piece in chain's
+ *	pieces buffer
+ *		-Records which buffer is being pointed to in pieces[n][0]
+ *		-Records starting point of piece in pieces[n][1]
+ *		-Records length of piece in pieces[n][2]
+ *
+ * Parameters:
+ *	PieceChain_t* chain
+ *		-A pointer to the PieceChain_t whose pieces buffer will
+ *		 hold the recorded information
+ *		-May not be NULL
+ *	int whichBuffer
+ *		-An integer representing buffer the recorded piece is in
+ *		-0 if original
+ *		-1 if add
+ *	int start
+ *		-An integer representing the start point of recorded piece
+ *
+ *	int whichBuffer
+ *		-An integer representing the recorded piece's length
+ *
+ * Return Type:
+ *	ropeNode*
+ *		-A newly created rope node with no children
+ */
+void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
+	//Search for first free space in given piece chain's table
+	int i = 0;
+	for(; chain->pieces[i][2] != 0; i++);
+
+	//Record which buffer the piece is in
+	chain->pieces[i][0] = whichBuffer;
+
+	//Record where the piece starts in the buffer
+	chain->pieces[i][1] = start;
+
+	//Record length of piece
+	chain->pieces[i][2] = length;
+}
+
+//TODO: WORK ON NULL FILE NAMES
 PieceChain_t* init_piece_chain(char* fileName){
 
 	//Create new piece chain
@@ -119,7 +180,7 @@ PieceChain_t* init_piece_chain(char* fileName){
 	//Check that file exists
 	if(fileDescriptor == NULL){
 		//If file does not exist exit with error.
-		perror("Error opening file for reading");
+		perror("Error");
 		exit(EXIT_FAILURE);
 	}
 	else{
@@ -144,9 +205,7 @@ PieceChain_t* init_piece_chain(char* fileName){
 		fclose(fileDescriptor);
 
 		//Add info to new_chain's table
-		newChain->pieces[0][0] = 0;
-		newChain->pieces[0][1] = 0;
-		newChain->pieces[0][2] = lengthRead;
+		record_piece(newChain, 0, 0, lengthRead);
 
 		//Malloc space for add as size of original file
 		newChain->add = (char *)malloc(fileLength * sizeof(char));
@@ -157,7 +216,7 @@ PieceChain_t* init_piece_chain(char* fileName){
 }
 
 int main() {
-	PieceChain_t *myChain = init_piece_chain("obsolete/rope.c");
+	PieceChain_t *myChain = init_piece_chain("obsolete/roped.c");
 	printf("%s\n", myChain->original);
 	return 1;
 }
