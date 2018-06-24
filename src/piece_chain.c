@@ -47,40 +47,6 @@ PieceChain_t* init_piece_chain(char* fileName){
 }
 
 /*
- * record_piece Function Definition
- * --------------------------------
- * Function Summary:
- *	Records necessary information on a given piece in chain's
- *	pieces buffer
- *		-Records which buffer is being pointed to in pieces[n][0]
- *		-Records starting point of piece in pieces[n][1]
- *		-Records length of piece in pieces[n][2]
- *
- * Parameters:
- *	PieceChain_t* chain
- *		-A pointer to the PieceChain_t whose pieces buffer will
- *		 hold the recorded information
- *		-May not be NULL
- *	int whichBuffer
- *		-An integer representing buffer the recorded piece is in
- *		-0 if original
- *		-1 if add
- *	int start
- *		-An integer representing the start point of recorded piece
- *
- *	int whichBuffer
- *		-An integer representing the recorded piece's length
- */
-void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
-	int i = 0;
-	for(; chain->pieces[i][2] != 0; i++);
-
-	chain->pieces[i][0] = whichBuffer;
-	chain->pieces[i][1] = start;
-	chain->pieces[i][2] = length;
-}
-
-/*
  * print_chain Function Definition
  * --------------------------------
  * Function Summary:
@@ -151,6 +117,44 @@ int get_current_length(PieceChain_t* chain){
 		currentLength += chain->pieces[i][2];
 	}
 	return currentLength;
+}
+
+int get_physical_index(int logicalIndex){
+
+}
+
+/*
+ * record_piece Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Records necessary information on a given piece in chain's
+ *	pieces buffer
+ *		-Records which buffer is being pointed to in pieces[n][0]
+ *		-Records starting point of piece in pieces[n][1]
+ *		-Records length of piece in pieces[n][2]
+ *
+ * Parameters:
+ *	PieceChain_t* chain
+ *		-A pointer to the PieceChain_t whose pieces buffer will
+ *		 hold the recorded information
+ *		-May not be NULL
+ *	int whichBuffer
+ *		-An integer representing buffer the recorded piece is in
+ *		-0 if original
+ *		-1 if add
+ *	int start
+ *		-An integer representing the start point of recorded piece
+ *
+ *	int whichBuffer
+ *		-An integer representing the recorded piece's length
+ */
+void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
+	int i = 0;
+	for(; chain->pieces[i][2] != 0; i++);
+
+	chain->pieces[i][0] = whichBuffer;
+	chain->pieces[i][1] = start;
+	chain->pieces[i][2] = length;
 }
 
 int main() {
