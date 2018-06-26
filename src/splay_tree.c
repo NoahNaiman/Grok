@@ -39,7 +39,11 @@ SplayTree_t* init_splay_tree(int whichBuffer, int physicalStart, int logicalStar
  *
  * Parameters:
  *	SplayTree_t* root
- *		-A pointer to a SplayTree_t
+ *		-A pointer to an existing SplayTree_t
+ *		-May not be NULL
+ *	SplayTree_t* newNode
+ *		-A newly created pointer a SplayTree_t
+ *		 to be inserted
  *		-May not be NULL
  */
 SplayTree_t* insert(SplayTree_t* root, SplayTree_t* newNode){
@@ -66,6 +70,58 @@ SplayTree_t* insert(SplayTree_t* root, SplayTree_t* newNode){
 		root->right = NULL;
 	}
 	return newNode;
+}
+
+/*
+ * delete Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Splays a node with the given key, then
+ *	removes it from tree and rejoins existing
+ *	pieces
+ *
+ *	     	 d                              b
+ *   		/ \          Delete 'c'        / \
+ *     	   a   e   ------------------->   a	  d
+ *    	    \                 		           \
+ *   	  	 c								 	e
+ *	   		/								   
+ *	       b								  
+ *	  
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to a SplayTree_t
+ *		-May not be NULL
+ *	int key
+ *		-An integer representing a starting location
+ *		 whose corresponding span should be deleted
+ */
+SplayTree_t* delete(SplayTree_t* root, int key){
+	SplayTree_t* temp;
+
+	if(root == NULL){
+		return NULL;
+	}
+
+	root = splay(root, key);
+
+	if(key != root->logicalStart){
+		return root;
+	}
+
+	if(root->left == NULL){
+		temp = root;
+		root = root->right;
+	}
+	else{
+		temp = root;
+		root = splay(root->left, key);
+		root->right = temp->right;
+	}
+
+	free(temp);
+
+	return root;
 }
 
 /* Utility Functions */
@@ -143,6 +199,10 @@ SplayTree_t* right_rotate(SplayTree_t* node){
  *	SplayTree_t* node
  *		-A pointer to a SplayTree_t
  *		-May not be NULL
+ *	int key
+ *		-An integer representing a logical start
+ *		 index whose corresponding node should be
+ *		 splayed to the top of the tree
  */
 SplayTree_t* splay(SplayTree_t* node, int key){
 	if(node == NULL || node->logicalStart == key){

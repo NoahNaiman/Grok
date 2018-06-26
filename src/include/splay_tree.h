@@ -12,6 +12,8 @@ struct SplayTree_t{
 	SplayTree_t *right;
 };
 
+SplayTree_t* insert(SplayTree_t* root, SplayTree_t* newNode);
+
 SplayTree_t* left_rotate(SplayTree_t* node);
 
 SplayTree_t* right_rotate(SplayTree_t* node);
