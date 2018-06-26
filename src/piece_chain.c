@@ -68,6 +68,7 @@ void print_chain(PieceChain_t* chain){
 			printf("%.*s", chain->pieces[i][2], &chain->add[chain->pieces[i][1]]);
 		}
 	}
+	printf("\n");
 }
 
 /* UTILITY FUNCTIONS */
@@ -119,9 +120,10 @@ int get_current_length(PieceChain_t* chain){
 	return currentLength;
 }
 
-int get_physical_index(int logicalIndex){
+//TODO
+// int get_physical_index(int logicalIndex){
 
-}
+// }
 
 /*
  * record_piece Function Definition
@@ -158,7 +160,7 @@ void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
 }
 
 int main() {
-	PieceChain_t *myChain = init_piece_chain("red_black_tree.c");
+	PieceChain_t *myChain = init_piece_chain("src/splay_tree.c");
 	print_chain(myChain);
 	return 1;
 }

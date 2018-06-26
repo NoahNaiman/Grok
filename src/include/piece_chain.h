@@ -1,6 +1,8 @@
 #ifndef PIECE_CHAIN_H
 #define PIECE_CHAIN_H
 
+#include "splay_tree.h"
+
 /* 
  * Piece Chain Definition
  * ----------------------
