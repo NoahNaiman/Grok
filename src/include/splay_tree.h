@@ -18,6 +18,6 @@ SplayTree_t* right_rotate(SplayTree_t* node);
 
 SplayTree_t* splay(SplayTree_t* root, int index);
 
-void traverse_preorder(SplayTree_t* root);
+void traverse_inorder(SplayTree_t* root);
 
 #endif

@@ -19,6 +19,55 @@ SplayTree_t* init_splay_tree(int whichBuffer, int physicalStart, int logicalStar
 	return newTree;
 }
 
+/*
+ * insert Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Inserts a new SplayTree_t node into a given
+ *	tree, pre-splaying the tree with the node
+ *	whose logicalStart is closest to new node's
+ *
+ *	     	 e                              b
+ *   		/ \          Insert 'b'        / \
+ *     	   f   g   ------------------->   a	  f
+ *    	  /                  		         / \
+ *   	 d 									c 	e
+ *	   	/									 \	 \
+ *	   c 									  d   g
+ *	  /
+ *   a             	            
+ *
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to a SplayTree_t
+ *		-May not be NULL
+ */
+SplayTree_t* insert(SplayTree_t* root, SplayTree_t* newNode){
+	if(root == NULL){
+		return newNode;
+	}
+
+	int key = newNode->logicalStart;
+
+	root = splay(root, key);
+
+	if(root->logicalStart == key){
+		return root;
+	}
+
+	if(root->logicalStart > key){
+		newNode->right = root;
+		newNode->left = root->left;
+		root->left = NULL;
+	}
+	else{
+		newNode->left = root;
+		newNode->right = root->right;
+		root->right = NULL;
+	}
+	return newNode;
+}
+
 /* Utility Functions */
 
 /*
@@ -77,7 +126,7 @@ SplayTree_t* right_rotate(SplayTree_t* node){
  * --------------------------------
  * Function Summary:
  *	Takes a SplayTree_t node who's logicalStart is closest
- *	to given index and repeatedly shifts tree until it is
+ *	to given key and repeatedly shifts tree until it is
  *	the root node
  *
  *	     	 f                              a
@@ -95,53 +144,54 @@ SplayTree_t* right_rotate(SplayTree_t* node){
  *		-A pointer to a SplayTree_t
  *		-May not be NULL
  */
-SplayTree_t* splay(SplayTree_t* root, int index){
-	if(root == NULL || root->logicalStart == index){
-		return root;
+SplayTree_t* splay(SplayTree_t* node, int key){
+	if(node == NULL || node->logicalStart == key){
+		return node;
 	}
 
-	if(root->logicalStart > index){
-		if(root->left == NULL){
-			return root;
+	if(node->logicalStart > key){
+		if(node->left == NULL){
+			return node;
 		}
 
-		if(root->left->logicalStart > index){
-			root->left->left = splay(root->left->left, index);
-			root = right_rotate(root);
+		if(node->left->logicalStart > key){
+			node->left->left = splay(node->left->left, key);
+			node = right_rotate(node);
 		}
-		else if(root->left->logicalStart < index){
-			root->left->right = splay(root->left->right, index);
+		else if(node->left->logicalStart < key){
+			node->left->right = splay(node->left->right, key);
 
-			if(root->left->right != NULL){
-				root->left = left_rotate(root->left);
+			if(node->left->right != NULL){
+				node->left = left_rotate(node->left);
 			}
 		}
-		return root->left == NULL ? root: right_rotate(root);
+		return node->left == NULL ? node: right_rotate(node);
 	}
 	else{
-		if(root->right == NULL){
-			return root;
+		if(node->right == NULL){
+			return node;
 		}
 
-		if(root->right->logicalStart > index){
-			root->right->left = splay(root->right->left, index);
+		if(node->right->logicalStart > key){
+			node->right->left = splay(node->right->left, key);
 
-			if(root->right->left != NULL){
-				root->right = right_rotate(root->right);
+			if(node->right->left != NULL){
+				node->right = right_rotate(node->right);
 			}
 		}
-		else if(root->right->logicalStart < index){
-			root->right->right = splay(root->right->right, index);
-			root = left_rotate(root);
+		else if(node->right->logicalStart < key){
+			node->right->right = splay(node->right->right, key);
+			node = left_rotate(node);
 		}
-		return root->right == NULL ? root: left_rotate(root);
+		return node->right == NULL ? node: left_rotate(node);
 	}
 }
 
-void traverse_preorder(SplayTree_t* root){
-	if(root != NULL){
-		printf("%d ", root->logicalStart);
-		traverse_preorder(root->left);
-		traverse_preorder(root->right);
+void traverse_inorder(SplayTree_t* root){
+	if(root == NULL){
+		return;
 	}
+	traverse_inorder(root->left);
+	printf("%d ", root->logicalStart);
+	traverse_inorder(root->right);
 }

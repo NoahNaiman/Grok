@@ -121,7 +121,7 @@ int get_current_length(PieceChain_t* chain){
 }
 
 //TODO
-// int get_physical_index(int logicalIndex){
+// int get_logical_start(int logicalIndex){
 
 // }
 
