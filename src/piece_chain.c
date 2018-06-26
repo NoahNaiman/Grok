@@ -35,6 +35,7 @@ PieceChain_t* init_piece_chain(char* fileName){
 		newChain->original = (char *)malloc(fileLength * sizeof(char));
 
 		size_t lengthRead = fread(newChain->original, sizeof(char), fileLength, fileDescriptor);
+		newChain->original[lengthRead++] = '\n';
 		newChain->original[lengthRead++] = '\0';
 
 		fclose(fileDescriptor);
@@ -68,7 +69,6 @@ void print_chain(PieceChain_t* chain){
 			printf("%.*s", chain->pieces[i][2], &chain->add[chain->pieces[i][1]]);
 		}
 	}
-	printf("\n");
 }
 
 /* UTILITY FUNCTIONS */

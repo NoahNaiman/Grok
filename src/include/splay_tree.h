@@ -12,6 +12,12 @@ struct SplayTree_t{
 	SplayTree_t *right;
 };
 
+SplayTree_t* left_rotate(SplayTree_t* node);
+
 SplayTree_t* right_rotate(SplayTree_t* node);
+
+SplayTree_t* splay(SplayTree_t* root, int index);
+
+void traverse_preorder(SplayTree_t* root);
 
 #endif

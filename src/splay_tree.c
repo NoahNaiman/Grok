@@ -21,6 +21,24 @@ SplayTree_t* init_splay_tree(int whichBuffer, int physicalStart, int logicalStar
 
 /* Utility Functions */
 
+/*
+ * left_rotate Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Shifts a given SplayTree_t node upwards and left,
+ *	adjusting tree as necessary
+ *
+ *	     b                              d
+ *   	/ \      Left Rotation         / \
+ *     a   d   ------------------->   b   e 
+ *        / \                 		 / \
+ *       c   e              	    a	c
+ *
+ * Parameters:
+ *	SplayTree_t* node
+ *		-A pointer to a SplayTree_t
+ *		-May not be NULL
+ */
 SplayTree_t* left_rotate(SplayTree_t* node){
 	SplayTree_t* temp = node->right;
 	node->right = temp->left;
@@ -28,6 +46,25 @@ SplayTree_t* left_rotate(SplayTree_t* node){
 	return temp;
 }
 
+
+/*
+ * right_rotate Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Shifts a given SplayTree_t node upwards and right,
+ *	adjusting tree as necessary
+ *
+ *	     d                              b
+ *   	/ \      Right Rotation        / \
+ *     b   e   ------------------->   a   d 
+ *    / \                 		         / \
+ *   a   c              	            c	e
+ *
+ * Parameters:
+ *	SplayTree_t* node
+ *		-A pointer to a SplayTree_t
+ *		-May not be NULL
+ */
 SplayTree_t* right_rotate(SplayTree_t* node){
 	SplayTree_t* temp = node->left;
 	node->left = temp->right;
@@ -35,7 +72,29 @@ SplayTree_t* right_rotate(SplayTree_t* node){
 	return temp;
 }
 
-//TODO: ROPE STYLE INDEX DECRMENT?
+/*
+ * splay Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Takes a SplayTree_t node who's logicalStart is closest
+ *	to given index and repeatedly shifts tree until it is
+ *	the root node
+ *
+ *	     	 f                              a
+ *   		/ \            Splay        	 \
+ *     	   d   e   ------------------->   	  d
+ *    	  /                  		         / \
+ *   	 c 									b 	f
+ *	   	/									 \	 \
+ *	   b 									  c   e
+ *	  /
+ *   a             	            
+ *
+ * Parameters:
+ *	SplayTree_t* node
+ *		-A pointer to a SplayTree_t
+ *		-May not be NULL
+ */
 SplayTree_t* splay(SplayTree_t* root, int index){
 	if(root == NULL || root->logicalStart == index){
 		return root;
@@ -46,11 +105,11 @@ SplayTree_t* splay(SplayTree_t* root, int index){
 			return root;
 		}
 
-		if(root->left->logicalStart > index){ //Zig-Zig (Left-Left)
+		if(root->left->logicalStart > index){
 			root->left->left = splay(root->left->left, index);
 			root = right_rotate(root);
 		}
-		else if(root->left->logicalStart < index){ //Zig-Zag (Left-Right)
+		else if(root->left->logicalStart < index){
 			root->left->right = splay(root->left->right, index);
 
 			if(root->left->right != NULL){
@@ -79,4 +138,10 @@ SplayTree_t* splay(SplayTree_t* root, int index){
 	}
 }
 
-
+void traverse_preorder(SplayTree_t* root){
+	if(root != NULL){
+		printf("%d ", root->logicalStart);
+		traverse_preorder(root->left);
+		traverse_preorder(root->right);
+	}
+}
