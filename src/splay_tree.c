@@ -96,7 +96,7 @@ SplayTree_t* insert(SplayTree_t* root, SplayTree_t* newNode){
  *		-An integer representing a starting location
  *		 whose corresponding span should be deleted
  */
-SplayTree_t* delete(SplayTree_t* root, int key){
+SplayTree_t* destroy(SplayTree_t* root, int key){
 	SplayTree_t* temp;
 
 	if(root == NULL){
@@ -247,6 +247,37 @@ SplayTree_t* splay(SplayTree_t* node, int key){
 	}
 }
 
+/*
+ * traverse_preorder Function Definition
+ * ------------------------------------
+ * Function Summary:
+ *	Prints out logical starts of each node in a splay
+ *	tree in pre-order
+ *
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to the SplayTree_t whose nodes should be printed
+ */
+void traverse_preorder(SplayTree_t* root){
+	if(root == NULL){
+		return;
+	}
+	printf("%d ", root->logicalStart);
+	traverse_preorder(root->left);
+	traverse_preorder(root->right);
+}
+
+/*
+ * traverse_inorder Function Definition
+ * ------------------------------------
+ * Function Summary:
+ *	Prints out logical starts of each node in a splay
+ *	tree in order
+ *
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to the SplayTree_t whose nodes should be printed
+ */
 void traverse_inorder(SplayTree_t* root){
 	if(root == NULL){
 		return;
@@ -254,4 +285,24 @@ void traverse_inorder(SplayTree_t* root){
 	traverse_inorder(root->left);
 	printf("%d ", root->logicalStart);
 	traverse_inorder(root->right);
+}
+
+/*
+ * traverse_postorder Function Definition
+ * ------------------------------------
+ * Function Summary:
+ *	Prints out logical starts of each node in a splay
+ *	tree in post-order
+ *
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to the SplayTree_t whose nodes should be printed
+ */
+void traverse_postorder(SplayTree_t* root){
+	if(root == NULL){
+		return;
+	}
+	traverse_postorder(root->left);
+	traverse_postorder(root->right);
+	printf("%d ", root->logicalStart);
 }

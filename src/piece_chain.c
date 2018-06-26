@@ -160,8 +160,6 @@ void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
 }
 
 int main() {
-	PieceChain_t *myChain = init_piece_chain("src/splay_tree.c");
-	print_chain(myChain);
 	return 1;
 }
 
