@@ -122,8 +122,14 @@ int get_current_length(SplayTree_t* root){
 }
 
 //TODO
-int get_logical_start(PieceChain_t* chain, int start, int length){
-	return 0;
+int get_logical_start(SplayTree_t* root, int index){
+	if(root == NULL || root->physicalStart > index){
+		return 0;
+	}
+	int currentLength = 0;
+	currentLength += root->length + get_logical_start(root->left, index) + get_logical_start(root->right, index);
+
+	return currentLength;
 }
 
 /*
@@ -153,12 +159,14 @@ int get_logical_start(PieceChain_t* chain, int start, int length){
  *		-An integer representing the recorded piece's length
  */
 void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
-	int logicalStart = get_logical_start(chain, start, length);
+	int logicalStart = get_logical_start(chain->pieces, start);
 	SplayTree_t* newNode = init_splay_tree(whichBuffer, start, logicalStart, length);
 	chain->pieces = insert(chain->pieces, newNode);
 }
 
 int main() {
+	PieceChain_t* myChain = init_piece_chain("src/splay_tree.c");
+	print_chain(myChain, myChain->pieces);
 	return 1;
 }
 
