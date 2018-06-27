@@ -96,7 +96,7 @@
 typedef struct{
 	char *original;
 	char *add;
-	int **pieces;
+	SplayTree_t *pieces;
 } PieceChain_t;
 
 /*
@@ -147,7 +147,7 @@ int get_original_size(FILE* fileDescriptor);
  *	printf("The current size of the file is: %d\n", get_current_size(anExistingPieceChain_t));
  *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
  */
-int get_current_length(PieceChain_t* chain);
+int get_current_length(SplayTree_t* chain);
 
 /*
  * print_chain Usage
@@ -158,6 +158,6 @@ int get_current_length(PieceChain_t* chain);
  *	print_chain(anExistingPieceChain_t)
  *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
  */
-void print_chain(PieceChain_t* chain);
+void print_chain(PieceChain_t* chain, SplayTree_t* root);
 
 #endif

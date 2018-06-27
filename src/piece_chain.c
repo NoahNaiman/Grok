@@ -15,20 +15,15 @@ PieceChain_t* init_piece_chain(char* fileName){
 
 	PieceChain_t*  newChain = (PieceChain_t *)malloc(sizeof(PieceChain_t));
 
-	int i;
-	newChain->pieces = (int **)malloc(BUFFERSIZE * sizeof(int *));
-	for(i=0; i < BUFFERSIZE; i++){
-		newChain->pieces[i] = (int *)malloc(3 * sizeof(int));
-	}
-	
 	FILE *fileDescriptor = fopen(fileName, "rb");
 
 	if(fileDescriptor == NULL){
 
 		newChain->original = (char *)malloc(BUFFERSIZE * sizeof(char));
-		record_piece(newChain, 0, 0, 0);
-
+		
 		newChain->add = (char *)malloc(BUFFERSIZE * sizeof(char));
+
+		newChain->pieces = init_splay_tree(0, 0, 0, 0);
 	}
 	else{
 		int fileLength = get_original_size(fileDescriptor);
@@ -40,9 +35,9 @@ PieceChain_t* init_piece_chain(char* fileName){
 
 		fclose(fileDescriptor);
 
-		record_piece(newChain, 0, 0, lengthRead);
-
 		newChain->add = (char *)malloc(fileLength * sizeof(char));
+
+		newChain->pieces = init_splay_tree(0, 0, 0, lengthRead);
 	}
 	return newChain;
 }
@@ -57,18 +52,23 @@ PieceChain_t* init_piece_chain(char* fileName){
  *	PieceChain_t* chain
  *		-A pointer to a PieceChain_t
  *		-May not be NULL
+ *	SpkayTree_t* root
+ *		-A pointer to a SplayTree_t
+ *		-May be NULL
  */
-//TODO: MODIFY TO STORE OUTPUT
-void print_chain(PieceChain_t* chain){
-	int i = 0;
-	for(; chain->pieces[i][2] != 0; i++){
-		if(chain->pieces[i][0] == 0){
-			printf("%.*s", chain->pieces[i][2], &chain->original[chain->pieces[i][1]]);
-		}
-		else{
-			printf("%.*s", chain->pieces[i][2], &chain->add[chain->pieces[i][1]]);
-		}
+//TODO: MODIFY TO STORE OUTPUT?
+void print_chain(PieceChain_t* chain, SplayTree_t* root){
+	if(root == NULL){
+		return;
 	}
+	print_chain(chain, root->left);
+	if(root->buffer == 0){
+		printf("%.*s", root->length, &chain->original[root->physicalStart]);
+	}
+	else{
+		printf("%.*s", root->length, &chain->add[root->physicalStart]);
+	}
+	print_chain(chain, root->right);
 }
 
 /* UTILITY FUNCTIONS */
@@ -111,19 +111,20 @@ int get_original_size(FILE* fileDescriptor){
  *	int currentLength
  *		-The current length of the text being edited
  */
-int get_current_length(PieceChain_t* chain){
-	int currentLength = 0;
-	int i = 0;
-	for(; chain->pieces[i][2] != 0; i++){
-		currentLength += chain->pieces[i][2];
+int get_current_length(SplayTree_t* root){
+	if(root == NULL){
+		return 0;
 	}
+	int currentLength = 0;
+	currentLength += root->length + get_current_length(root->left) + get_current_length(root->right);
+	
 	return currentLength;
 }
 
 //TODO
-// int get_logical_start(int logicalIndex){
-
-// }
+int get_logical_start(PieceChain_t* chain, int start, int length){
+	return 0;
+}
 
 /*
  * record_piece Function Definition
@@ -145,18 +146,16 @@ int get_current_length(PieceChain_t* chain){
  *		-0 if original
  *		-1 if add
  *	int start
- *		-An integer representing the start point of recorded piece
+ *		-An integer representing the physical start point of
+ *		 recorded piece
  *
  *	int whichBuffer
  *		-An integer representing the recorded piece's length
  */
 void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
-	int i = 0;
-	for(; chain->pieces[i][2] != 0; i++);
-
-	chain->pieces[i][0] = whichBuffer;
-	chain->pieces[i][1] = start;
-	chain->pieces[i][2] = length;
+	int logicalStart = get_logical_start(chain, start, length);
+	SplayTree_t* newNode = init_splay_tree(whichBuffer, start, logicalStart, length);
+	chain->pieces = insert(chain->pieces, newNode);
 }
 
 int main() {
