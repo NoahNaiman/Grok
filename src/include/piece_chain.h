@@ -150,6 +150,19 @@ int get_original_size(FILE* fileDescriptor);
 int get_current_length(SplayTree_t* chain);
 
 /*
+ * get_logical_start Usage
+ * --------------------------------
+ * Get the logical start index in a span of text
+ * from a physical index
+ *
+ * Example:
+ *	printf("The logical start index of physical index %d is: %d\n", aPhysicalIndex, get_logical_start(anExistingPieceChain_t, aPhysicalIndex));
+ *	-aPhysicalIndex = an integer representing a location in either original or add buffer
+ *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
+ */
+int get_logical_start(SplayTree_t* root, int index);
+
+/*
  * print_chain Usage
  * --------------------------------
  * Print some text as recorded by a given PieceChain_t

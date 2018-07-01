@@ -85,7 +85,7 @@ void print_chain(PieceChain_t* chain, SplayTree_t* root){
  *		-May not be NULL
  *
  * Return Type:
- *	int fileLength
+ *	integer
  *		-The length of the given file in bytes
  */
 int get_original_size(FILE* fileDescriptor){
@@ -96,19 +96,19 @@ int get_original_size(FILE* fileDescriptor){
 }
 
 /*
- * get_current_size Function Definition
+ * get_current_length Function Definition
  * --------------------------------
  * Function Summary:
  *	Get the size in bytes of the current text
  *
  * Parameters:
- *	PieceChain_t* chain
- *		-A pointer to the PieceChain_t recording info for
+ *	SplayTree_t* root
+ *		-A pointer to the SplayTree_t recording info for
  *		 the current text
  *		-May not be NULL
  *
  * Return Type:
- *	int currentLength
+ *	integer
  *		-The current length of the text being edited
  */
 int get_current_length(SplayTree_t* root){
@@ -121,15 +121,39 @@ int get_current_length(SplayTree_t* root){
 	return currentLength;
 }
 
-//TODO
+/*
+ * get_logical_start Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Gets the logical start for a span of text from
+ *	a given physical start location
+ *
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to the SplayTree_t holding info of
+ *		 a wanted span
+ *		-May not be NULL
+ *	int index
+ *		-An integer representing a physical start index
+ *		 to be translated into a logical one
+ *
+ * Return Type:
+ *	integer
+ *		-The current length of the text being edited
+ */
 int get_logical_start(SplayTree_t* root, int index){
-	if(root == NULL || root->physicalStart > index){
-		return 0;
+	if(root == NULL){
+		return -1;
 	}
-	int currentLength = 0;
-	currentLength += root->length + get_logical_start(root->left, index) + get_logical_start(root->right, index);
-
-	return currentLength;
+	else if(index >= root->physicalStart && root <= (root->physicalStart + root->length)){
+		return root->logicalStart + (index - root->physicalStart);
+	}
+	else if(index < root->physicalStart){
+		return get_logical_start(root->left);
+	}
+	else{
+		return get_logical_start(root->left);
+	}
 }
 
 /*
@@ -154,8 +178,7 @@ int get_logical_start(SplayTree_t* root, int index){
  *	int start
  *		-An integer representing the physical start point of
  *		 recorded piece
- *
- *	int whichBuffer
+ *	int length
  *		-An integer representing the recorded piece's length
  */
 void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
