@@ -139,7 +139,8 @@ int get_current_length(SplayTree_t* root){
  *
  * Return Type:
  *	integer
- *		-The current length of the text being edited
+ *		-The logical start index equivalent to the given
+ *		 physical one
  */
 int get_logical_start(SplayTree_t* root, int index){
 	if(root == NULL){
@@ -153,6 +154,42 @@ int get_logical_start(SplayTree_t* root, int index){
 	}
 	else{
 		return get_logical_start(root->left);
+	}
+}
+
+/*
+ * get_physical_start Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Gets the physical start for a span of text from
+ *	a given logical start location
+ *
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to the SplayTree_t holding info of
+ *		 a wanted span
+ *		-May not be NULL
+ *	int index
+ *		-An integer representing a logical start index
+ *		 to be translated into a physical one
+ *
+ * Return Type:
+ *	integer
+ *		-The physical start index equivalent to the given
+ *		 logical one
+ */
+int get_physical_start(SplayTree_t* root, int index){
+	if(root == NULL){
+		return -1;
+	}
+	else if(index >= root->logicalStart && root <= (root->logicalStart + root->length)){
+		return root->physicalStart + (index - root->logicalStart);
+	}
+	else if(index < root->logicalStart){
+		return get_physical_start(root->left);
+	}
+	else{
+		return get_physical_start(root->left);
 	}
 }
 

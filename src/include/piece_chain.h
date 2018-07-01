@@ -163,6 +163,19 @@ int get_current_length(SplayTree_t* chain);
 int get_logical_start(SplayTree_t* root, int index);
 
 /*
+ * get_physical_start Usage
+ * --------------------------------
+ * Get the physical start index in a span of text
+ * from a logical index
+ *
+ * Example:
+ *	printf("The physical start index of logical index %d is: %d\n", aLogicalIndex, get_physical_start(anExistingPieceChain_t, aLogicalIndex));
+ *	-aLogicalIndex = an integer representing a location in a span of text
+ *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
+ */
+int get_physical_start(SplayTree_t* root, int index);
+
+/*
  * print_chain Usage
  * --------------------------------
  * Print some text as recorded by a given PieceChain_t
