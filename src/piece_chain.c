@@ -193,8 +193,6 @@ int get_physical_start(SplayTree_t* root, int index){
 	}
 }
 
-//Test
-
 /*
  * record_piece Function Definition
  * --------------------------------
