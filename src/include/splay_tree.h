@@ -23,4 +23,6 @@ SplayTree_t* right_rotate(SplayTree_t* node);
 
 SplayTree_t* splay(SplayTree_t* root, int index);
 
+void increment(SplayTree_t* node, int shift);
+
 #endif

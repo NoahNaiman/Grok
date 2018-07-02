@@ -146,14 +146,14 @@ int get_logical_start(SplayTree_t* root, int index){
 	if(root == NULL){
 		return -1;
 	}
-	else if(index >= root->physicalStart && root <= (root->physicalStart + root->length)){
+	else if(index >= root->physicalStart && index <= (root->physicalStart + root->length)){
 		return root->logicalStart + (index - root->physicalStart);
 	}
 	else if(index < root->physicalStart){
-		return get_logical_start(root->left);
+		return get_logical_start(root->left, index);
 	}
 	else{
-		return get_logical_start(root->left);
+		return get_logical_start(root->left, index);
 	}
 }
 
@@ -182,14 +182,14 @@ int get_physical_start(SplayTree_t* root, int index){
 	if(root == NULL){
 		return -1;
 	}
-	else if(index >= root->logicalStart && root <= (root->logicalStart + root->length)){
+	else if(index >= root->logicalStart && index <= (root->logicalStart + root->length)){
 		return root->physicalStart + (index - root->logicalStart);
 	}
 	else if(index < root->logicalStart){
-		return get_physical_start(root->left);
+		return get_physical_start(root->left, index);
 	}
 	else{
-		return get_physical_start(root->left);
+		return get_physical_start(root->left, index);
 	}
 }
 
