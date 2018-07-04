@@ -72,6 +72,35 @@ SplayTree_t* right_rotate(SplayTree_t* node){
 	return temp;
 }
 
+SplayTree_t* consolidate(SplayTree_t* root){
+	int rootEndPhysical = root->physicalStart + root->physicalStart;
+	int rootEndLogical = root->logicalStart + root->physicalStart;
+	int leftEndPhysical = root->left->physicalStart + root->left->length;
+	int leftEndlogical = root->left->logicalStart + root->left->length;
+	
+	if((leftEndPhysical + 1) == root->physicalStart &&
+		(leftEndlogical + 1) == root->logicalStart &&
+		(rootEndPhysical + 1) == root->right->physicalStart &&
+		(rootEndlogical + 1) == root->right->logicalStart &&
+		root->left->buffer == root->buffer &&
+		root->buffer == root->right->buffer){
+		//consolidate left, right, center
+		root->physicalStart = root->left->physicalStart;
+		root->logicalStart = root->left->logicalStart;
+		root->length = root->left->length + root->length + root->right->length;
+	}
+	else if((leftEndPhysical + 1) == root->physicalStart &&
+		(leftEndlogical + 1) == root->logicalStart &&
+		root->left->buffer == root->buffer){
+		//Consolidate left and center
+	}
+	else if((rootEndPhysical + 1) == root->right->physicalStart &&
+		(rootEndlogical + 1) == root->right->logicalStart &&
+		root->buffer == root->right->buffer){
+		//consolidate root and right
+	}
+}
+
 /*
  * splay Function Definition
  * --------------------------------
