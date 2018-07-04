@@ -3,6 +3,7 @@
 
 #include "splay_tree.h"
 
+//TODO: UPDATE DOCUMENTATION FOR SPLAY TREE
 /* 
  * Piece Chain Definition
  * ----------------------
@@ -106,7 +107,7 @@ typedef struct{
  * file and assigning all necessary fields
  *
  * Example:
- *	PieceChain_t aNewPieceChain = init_piece_chain(aFileName);
+ *	PieceChain_t* aNewPieceChain = init_piece_chain(aFileName);
  *	-aFileName = an array of chars representing either an existing 
  *	 file or one to be created
  */
@@ -120,12 +121,23 @@ PieceChain_t* init_piece_chain(char* fileName);
  *
  * Example:
  *	record_piece(anExistingPieceChain_t, originalOrAdd, startPoint, lengthOfPiece);
- *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
+ *	-anExistingPieceChain_t = an already initialized PieceChain_t
  *	-originalOrAdd = 0 if original buffer, 1 if add buffer
  *	-startPoint = recorded piece's start index
  *	-lengthOfPiece = recorded piece's length
  */
 void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length);
+
+/*
+ * print_chain Usage
+ * --------------------------------
+ * Print some text as recorded by a given PieceChain_t
+ *
+ * Example:
+ *	print_chain(anExistingPieceChain_t)
+ *	-anExistingPieceChain_t = an already initialized PieceChain_t
+ */
+void print_chain(PieceChain_t* chain, SplayTree_t* root);
 
 /*
  * get_original_size Usage
@@ -145,45 +157,8 @@ int get_original_size(FILE* fileDescriptor);
  *
  * Example:
  *	printf("The current size of the file is: %d\n", get_current_size(anExistingPieceChain_t));
- *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
+ *	-anExistingPieceChain_t = an already initialized PieceChain_t
  */
 int get_current_length(SplayTree_t* chain);
-
-/*
- * get_logical_start Usage
- * --------------------------------
- * Get the logical start index in a span of text
- * from a physical index
- *
- * Example:
- *	printf("The logical start index of physical index %d is: %d\n", aPhysicalIndex, get_logical_start(anExistingPieceChain_t, aPhysicalIndex));
- *	-aPhysicalIndex = an integer representing a location in either original or add buffer
- *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
- */
-int get_logical_start(SplayTree_t* root, int index);
-
-/*
- * get_physical_start Usage
- * --------------------------------
- * Get the physical start index in a span of text
- * from a logical index
- *
- * Example:
- *	printf("The physical start index of logical index %d is: %d\n", aLogicalIndex, get_physical_start(anExistingPieceChain_t, aLogicalIndex));
- *	-aLogicalIndex = an integer representing a location in a span of text
- *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
- */
-int get_physical_start(SplayTree_t* root, int index);
-
-/*
- * print_chain Usage
- * --------------------------------
- * Print some text as recorded by a given PieceChain_t
- *
- * Example:
- *	print_chain(anExistingPieceChain_t)
- *	-anExistingPieceChain_t = an already initialized Piece_Chain_t
- */
-void print_chain(PieceChain_t* chain, SplayTree_t* root);
 
 #endif

@@ -8,8 +8,7 @@
 #define BUFFERSIZE 494848
 #endif
 
-
-/* CORE FUNCTIONS */
+/* INITIALIZER */
 
 PieceChain_t* init_piece_chain(char* fileName){
 
@@ -42,84 +41,7 @@ PieceChain_t* init_piece_chain(char* fileName){
 	return newChain;
 }
 
-/*
- * print_chain Function Definition
- * --------------------------------
- * Function Summary:
- *	Print the recorded text to standard output
- *
- * Parameters:
- *	PieceChain_t* chain
- *		-A pointer to a PieceChain_t
- *		-May not be NULL
- *	SpkayTree_t* root
- *		-A pointer to a SplayTree_t
- *		-May be NULL
- */
-//TODO: MODIFY TO STORE OUTPUT?
-void print_chain(PieceChain_t* chain, SplayTree_t* root){
-	if(root == NULL){
-		return;
-	}
-	print_chain(chain, root->left);
-	if(root->buffer == 0){
-		printf("%.*s", root->length, &chain->original[root->physicalStart]);
-	}
-	else{
-		printf("%.*s", root->length, &chain->add[root->physicalStart]);
-	}
-	print_chain(chain, root->right);
-}
-
 /* UTILITY FUNCTIONS */
-
-/*
- * get_original_size Function Definition
- * --------------------------------
- * Function Summary:
- *	Get the size in bytes of a given text file
- *
- * Parameters:
- *	FILE* fileDescriptor
- *		-A pointer to a file
- *		-May not be NULL
- *
- * Return Type:
- *	integer
- *		-The length of the given file in bytes
- */
-int get_original_size(FILE* fileDescriptor){
-	fseek(fileDescriptor, 0, SEEK_END);
-	int fileLength = ftell(fileDescriptor);
-	rewind(fileDescriptor);
-	return fileLength;
-}
-
-/*
- * get_current_length Function Definition
- * --------------------------------
- * Function Summary:
- *	Get the size in bytes of the current text
- *
- * Parameters:
- *	SplayTree_t* root
- *		-A pointer to the SplayTree_t recording info for
- *		 the current text
- *		-May not be NULL
- *
- * Return Type:
- *	integer
- *		-The current length of the text being edited
- */
-int get_current_length(SplayTree_t* root){
-	if(root == NULL){
-		return 0;
-	}
-	int currentLength = 0;
-	currentLength += root->length + get_current_length(root->left) + get_current_length(root->right);
-	
-	return currentLength;
-}
 
 /*
  * get_logical_start Function Definition
@@ -191,6 +113,85 @@ int get_physical_start(SplayTree_t* root, int index){
 	else{
 		return get_physical_start(root->left, index);
 	}
+}
+
+/* CORE FUNCTIONS */
+
+/*
+ * print_chain Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Print the recorded text to standard output
+ *
+ * Parameters:
+ *	PieceChain_t* chain
+ *		-A pointer to a PieceChain_t
+ *		-May not be NULL
+ *	SpkayTree_t* root
+ *		-A pointer to a SplayTree_t
+ *		-May be NULL
+ */
+//TODO: MODIFY TO STORE OUTPUT?
+void print_chain(PieceChain_t* chain, SplayTree_t* root){
+	if(root == NULL){
+		return;
+	}
+	print_chain(chain, root->left);
+	if(root->buffer == 0){
+		printf("%.*s", root->length, &chain->original[root->physicalStart]);
+	}
+	else{
+		printf("%.*s", root->length, &chain->add[root->physicalStart]);
+	}
+	print_chain(chain, root->right);
+}
+
+/*
+ * get_original_size Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Get the size in bytes of a given text file
+ *
+ * Parameters:
+ *	FILE* fileDescriptor
+ *		-A pointer to a file
+ *		-May not be NULL
+ *
+ * Return Type:
+ *	integer
+ *		-The length of the given file in bytes
+ */
+int get_original_size(FILE* fileDescriptor){
+	fseek(fileDescriptor, 0, SEEK_END);
+	int fileLength = ftell(fileDescriptor);
+	rewind(fileDescriptor);
+	return fileLength;
+}
+
+/*
+ * get_current_length Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Get the size in bytes of the current text
+ *
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to the SplayTree_t recording info for
+ *		 the current text
+ *		-May not be NULL
+ *
+ * Return Type:
+ *	integer
+ *		-The current length of the text being edited
+ */
+int get_current_length(SplayTree_t* root){
+	if(root == NULL){
+		return 0;
+	}
+	int currentLength = 0;
+	currentLength += root->length + get_current_length(root->left) + get_current_length(root->right);
+	
+	return currentLength;
 }
 
 /*

@@ -4,7 +4,7 @@
 
 #include "include/splay_tree.h"
 
-/* Core Functions */
+/* INITIALIZER */
 
 SplayTree_t* init_splay_tree(int whichBuffer, int physicalStart, int logicalStart, int length){
 	SplayTree_t* newTree = (SplayTree_t *)malloc(sizeof(SplayTree_t));
@@ -19,124 +19,7 @@ SplayTree_t* init_splay_tree(int whichBuffer, int physicalStart, int logicalStar
 	return newTree;
 }
 
-/*
- * insert Function Definition
- * --------------------------------
- * Function Summary:
- *	Inserts a new SplayTree_t node into a given
- *	tree, pre-splaying the tree with the node
- *	whose logicalStart is closest to new node's
- *
- *	     	 e                              b
- *   		/ \          Insert 'b'        / \
- *     	   f   g   ------------------->   a	  f
- *    	  /                  		         / \
- *   	 d 									c 	e
- *	   	/									 \	 \
- *	   c 									  d   g
- *	  /
- *   a             	            
- *
- * Parameters:
- *	SplayTree_t* root
- *		-A pointer to an existing SplayTree_t
- *		-May not be NULL
- *	SplayTree_t* newNode
- *		-A newly created pointer a SplayTree_t
- *		 to be inserted
- *		-May not be NULL
- */
-SplayTree_t* insert(SplayTree_t* root, SplayTree_t* newNode){
-	if(root == NULL){
-		return newNode;
-	}
-
-	int key = newNode->logicalStart;
-
-	root = splay(root, key);
-
-	if(root->logicalStart == key){
-		root->logicalStart = root->logicalStart + newNode->length;
-		increment(root->right, newNode->length);
-		newNode->right = root;
-		newNode->left = root->left;
-		root->left = NULL;
-		return newNode;
-	}
-	else if(root->logicalStart > key){
-		//Repeat splay to get node with closest but less logical start
-		root = splay(root, key);
-	}
-
-	int preFractureLength = newNode->logicalStart - root->logicalStart;
-	int pyhsicalFracture = root->physicalStart + preFractureLength + newNode->length;	
-	int logicalFracture = root->logicalStart + preFractureLength + newNode->length;
-	int postFractureLength = root->length - preFractureLength;
-	SplayTree_t* postFractureNode = init_splay_tree(root->buffer, pyhsicalFracture, logicalFracture, postFractureLength);
-	increment(root->right, newNode->length);
-	postFractureNode->right = root->right;
-
-	root->length = preFractureLength;
-	root->right = NULL;
-
-	newNode->right = postFractureNode;
-	newNode->left = root;
-	return newNode;
-}
-
-/*
- * delete Function Definition
- * --------------------------------
- * Function Summary:
- *	Splays a node with the given key, then
- *	removes it from tree and rejoins existing
- *	pieces
- *
- *	     	 d                              b
- *   		/ \          Delete 'c'        / \
- *     	   a   e   ------------------->   a	  d
- *    	    \                 		           \
- *   	  	 c								 	e
- *	   		/								   
- *	       b								  
- *	  
- * Parameters:
- *	SplayTree_t* root
- *		-A pointer to a SplayTree_t
- *		-May not be NULL
- *	int key
- *		-An integer representing a starting location
- *		 whose corresponding span should be deleted
- */
-SplayTree_t* destroy(SplayTree_t* root, int key){
-	SplayTree_t* temp;
-
-	if(root == NULL){
-		return NULL;
-	}
-
-	root = splay(root, key);
-
-	if(key != root->logicalStart){
-		return root;
-	}
-
-	if(root->left == NULL){
-		temp = root;
-		root = root->right;
-	}
-	else{
-		temp = root;
-		root = splay(root->left, key);
-		root->right = temp->right;
-	}
-
-	free(temp);
-
-	return root;
-}
-
-/* Utility Functions */
+/* UTILITY FUNCTIONS */
 
 /*
  * left_rotate Function Definition
@@ -146,7 +29,7 @@ SplayTree_t* destroy(SplayTree_t* root, int key){
  *	adjusting tree as necessary
  *
  *	     b                              d
- *   	/ \      Left Rotation         / \
+ *   	/ \      Left Rotate 'd'       / \
  *     a   d   ------------------->   b   e 
  *        / \                 		 / \
  *       c   e              	    a	c
@@ -267,4 +150,124 @@ void increment(SplayTree_t* node, int shift){
 	increment(node->right, shift);
 	increment(node->left, shift);
 	return;
+}
+
+/* CORE FUNCTIONS */
+
+/*
+ * insert Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Inserts a new SplayTree_t node into a given
+ *	tree, pre-splaying the tree with the node
+ *	whose logicalStart is closest to new node's
+ *
+ *	     	 e                              b
+ *   		/ \          Insert 'b'        / \
+ *     	   f   g   ------------------->   a	  f
+ *    	  /                  		         / \
+ *   	 d 									c 	e
+ *	   	/									 \	 \
+ *	   c 									  d   g
+ *	  /
+ *   a             	            
+ *
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to an existing SplayTree_t
+ *		-May not be NULL
+ *	SplayTree_t* newNode
+ *		-A newly created pointer a SplayTree_t
+ *		 to be inserted
+ *		-May not be NULL
+ */
+SplayTree_t* insert(SplayTree_t* root, SplayTree_t* newNode){
+	if(root == NULL){
+		return newNode;
+	}
+
+	int key = newNode->logicalStart;
+
+	root = splay(root, key);
+
+	if(root->logicalStart == key){
+		root->logicalStart = root->logicalStart + newNode->length;
+		increment(root->right, newNode->length);
+		newNode->right = root;
+		newNode->left = root->left;
+		root->left = NULL;
+		return newNode;
+	}
+	else if(root->logicalStart > key){
+		//Repeat splay to get node with closest but less logical start
+		root = splay(root, key);
+	}
+
+	int preFractureLength = newNode->logicalStart - root->logicalStart;
+	int pyhsicalFracture = root->physicalStart + preFractureLength + newNode->length;	
+	int logicalFracture = root->logicalStart + preFractureLength + newNode->length;
+	int postFractureLength = root->length - preFractureLength;
+	SplayTree_t* postFractureNode = init_splay_tree(root->buffer, pyhsicalFracture, logicalFracture, postFractureLength);
+	increment(root->right, newNode->length);
+	postFractureNode->right = root->right;
+
+	root->length = preFractureLength;
+	root->right = NULL;
+
+	newNode->right = postFractureNode;
+	newNode->left = root;
+	return newNode;
+}
+
+/*
+ * destroy Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Splays a node with the given key, then
+ *	removes it from tree and rejoins existing
+ *	pieces
+ *
+ *	     	 d                              b
+ *   		/ \          Delete 'c'        / \
+ *     	   a   e   ------------------->   a	  d
+ *    	    \                 		           \
+ *   	  	 c								 	e
+ *	   		/								   
+ *	       b								  
+ *	  
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to a SplayTree_t
+ *		-May not be NULL
+ *	int key
+ *		-An integer representing a starting location
+ *		 whose corresponding span should be deleted
+ */
+SplayTree_t* destroy(SplayTree_t* root, int key){
+	SplayTree_t* temp;
+
+	if(root == NULL){
+		return NULL;
+	}
+
+	root = splay(root, key);
+
+	//Key is not in tree
+	if(key != root->logicalStart){
+		return root;
+	}
+
+	if(root->left == NULL){
+		temp = root;
+		root = root->right;
+	}
+	else{
+		temp = root;
+		root = splay(root->left, key);
+		root->right = temp->right;
+	}
+
+	free(temp);
+
+	return root;
 }
