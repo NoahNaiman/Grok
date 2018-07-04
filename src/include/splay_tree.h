@@ -1,6 +1,87 @@
 #ifndef SPLAY_TREE_H
 #define SPLAY_TREE_H
 
+/* 
+ * Splay Tree Definition
+ * ----------------------
+ * Summary:
+ *	A special case of a binary search tree,
+ *	optimized for localized oprations. Whenever
+ *	an operation is performed on a node, that
+ *	node is first "splayed" to the top of the
+ *	tree by repeatedly roating it, its parent
+ *	node, and its children right and left until
+ *	it is the new root. Each node in this tree
+ *	holds information regarding a span of text
+ *	to be used for a piece chain data structure.
+ *
+ * Typdef:
+ *	SplayTree_t
+ *
+ * Values:
+ *	int buffer;
+ *		-An integer representing in which buffer
+ *		 this node's corresponding text is stored
+ *			--0 if original
+ *			--1 if add
+ *	int physicalStart:
+ *		-An integer representing the start index of
+ *		 this node's span of text in its corresponding
+ *		 buffer
+ *	int logicalStart:
+ *		-An integer representing the start index of
+ *		 this node's span of text within the context
+ *		 of the text represented by the entire tree
+ *	int length:
+ *		-An integer representing the number of characters
+ *		 in this node's span of text
+ *
+ *
+ * Visual Example:
+ *	
+ *	Original file buffer (read only):
+ *
+ *	-----------------------------------------
+ *	|A| |l|a|r|g|e| |s|p|a|n| |o|f| |t|e|x|t|
+ *	-----------------------------------------
+ *
+ *	Add buffer (append only):
+ *
+ *	-----------------------------------------
+ *	|E|n|g|l|i|s|h|							|
+ *	-----------------------------------------
+ *
+ *	Tree
+ *
+ *							  --------------------
+ *						      | buffer: 1	     |
+ *							  | physicalStart: 0 | 
+ *							  | logicalStart: 11 |
+ *							  | length: 8		 |
+ *							  --------------------
+ *					              /			 \
+ *					             /	          \ 
+ *					            / 			   \
+ *			--------------------				--------------------
+ *		 	| buffer: 0 	   |				| buffer: 0 	   |
+ *		 	| physicalStart: 8 |				| physicalStart: 16| 
+ * 		 	| logicalStart: 3  |				| logicalStart: 18 |
+ *		 	| length: 8		   |				| length: 4		   |
+ *		 	--------------------				--------------------
+ *		  	  	    /
+ *		 	 	   /
+ *			      /
+ *	--------------------
+ *	| buffer: 0 	   |
+ *	| physicalStart: 0 | 
+ *	| logicalStart: 0  |
+ *	| length: 2		   |
+ *	--------------------
+ *
+ * 	Text:
+ *
+ * 	A span of English text
+ */
 typedef struct SplayTree_t SplayTree_t;
 
 struct SplayTree_t{

@@ -17,7 +17,7 @@
  *	localized operations by using a Splay Tree
  *
  * Typdef:
- *	piece_chain_t
+ *	PieceChain_t
  *
  * Values:
  *	char *original;
