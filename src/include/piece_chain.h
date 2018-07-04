@@ -3,7 +3,6 @@
 
 #include "splay_tree.h"
 
-//TODO: UPDATE DOCUMENTATION FOR SPLAY TREE
 /* 
  * Piece Chain Definition
  * ----------------------
@@ -12,8 +11,10 @@
  *	holds the original text, read in at launch. This
  *	buffer is read-only. The second holds any inserts
  *	made to the file. This is append only. Finally,
- *	the last is a table containing which buffer the
- *	piece is in, its start index, and its length.
+ *	the last is a binary tree of nodes containing
+ *	which buffer the piece is in, its start index,
+ *	and its length. This tree is optimized for
+ *	localized operations by using a Splay Tree
  *
  * Typdef:
  *	piece_chain_t
@@ -26,14 +27,18 @@
  *		-A buffer holding all additions to the
  *		 current file
  *		-Append only
- *	int *pieces:
- *		-A 1024 by 3 matrix where each row represnts
- *		 one piece.
- *		-pieces[n][0] holds which matrix is being used
+ *	SplayTree_t *pieces:
+ *		-A pointer to the root of a binary tree
+ *		 wherein each node represents one piece
+ *		-pieces->buffer holds which matrix is being used
  *			--0 if original
  *			--1 if add
- *		-pieces[n][1] states the start of the current piece
- *		-pieces[n][2] states the length of the current piece
+ *		-pieces->physicalStart states the start index 
+ *		 of the corresponding piece in its buffer
+ *		-pieces->logicalStart states the start index of
+ *		 the corresponding piece in the full text
+ *		-pieces->length states the number of characters
+ *		 in the corresponding span of text
  *
  *
  * Visual Example:

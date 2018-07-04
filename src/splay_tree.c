@@ -142,6 +142,23 @@ SplayTree_t* splay(SplayTree_t* node, int key){
 	}
 }
 
+/*
+ * increment Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Increments by shift the logical start of
+ *	given node and all children in node's right
+ *	subtree
+ *
+ * Parameters:
+ *	SplayTree_t* node
+ *		-A pointer to a SplayTree_t
+ *		-May not be NULL
+ *	int shift
+ *		-An integer by which to increment the
+ *		 logical start of node and node's
+ *		 right subtree by
+ */
 void increment(SplayTree_t* node, int shift){
 	if(node == NULL){
 		return;
