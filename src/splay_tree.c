@@ -72,9 +72,22 @@ SplayTree_t* right_rotate(SplayTree_t* node){
 	return temp;
 }
 
+/*
+ * consolidate Function Definition
+ * --------------------------------
+ * Function Summary:
+ *	Merges a node with one or both of its
+ *	children if they directly follow one
+ *	another both in memory and logically
+ *
+ * Parameters:
+ *	SplayTree_t* root
+ *		-A pointer to a SplayTree_t
+ *		-May not be NULL
+ */
 SplayTree_t* consolidate(SplayTree_t* root){
-	int rootEndPhysical = root->physicalStart + root->physicalStart;
-	int rootEndLogical = root->logicalStart + root->physicalStart;
+	int rootEndPhysical = root->physicalStart + root->length;
+	int rootEndLogical = root->logicalStart + root->length;
 	int leftEndPhysical = root->left->physicalStart + root->left->length;
 	int leftEndlogical = root->left->logicalStart + root->left->length;
 	
@@ -88,16 +101,27 @@ SplayTree_t* consolidate(SplayTree_t* root){
 		root->physicalStart = root->left->physicalStart;
 		root->logicalStart = root->left->logicalStart;
 		root->length = root->left->length + root->length + root->right->length;
+
+		root->left = destroy(root->left, root->left->logicalStart);
+		root->right = destroy(root->right, root->right->logicalStart);
 	}
 	else if((leftEndPhysical + 1) == root->physicalStart &&
 		(leftEndlogical + 1) == root->logicalStart &&
 		root->left->buffer == root->buffer){
-		//Consolidate left and center
+
+		root->physicalStart = root->left->physicalStart;
+		root->logicalStart = root->left->logicalStart;
+		root->length = root->left->length + root->length;
+
+		root->left = destroy(root->left, root->left->logicalStart);
 	}
 	else if((rootEndPhysical + 1) == root->right->physicalStart &&
 		(rootEndlogical + 1) == root->right->logicalStart &&
 		root->buffer == root->right->buffer){
-		//consolidate root and right
+
+		root->length = root->length + root->right->length;
+
+		root->right = destroy(root->right, root->right->logicalStart);
 	}
 }
 
@@ -262,6 +286,7 @@ SplayTree_t* insert(SplayTree_t* root, SplayTree_t* newNode){
 
 	newNode->right = postFractureNode;
 	newNode->left = root;
+	newNode = consolidate(newNode);
 	return newNode;
 }
 
