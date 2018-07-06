@@ -224,10 +224,3 @@ void record_piece(PieceChain_t* chain, int whichBuffer, int start, int length){
 	SplayTree_t* newNode = init_splay_tree(whichBuffer, start, logicalStart, length);
 	chain->pieces = insert(chain->pieces, newNode);
 }
-
-int main() {
-	PieceChain_t* myChain = init_piece_chain("src/splay_tree.c");
-	print_chain(myChain, myChain->pieces);
-	return 1;
-}
-
