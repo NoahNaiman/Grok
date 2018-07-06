@@ -89,12 +89,12 @@ SplayTree_t* consolidate(SplayTree_t* root){
 	int rootEndPhysical = root->physicalStart + root->length;
 	int rootEndLogical = root->logicalStart + root->length;
 	int leftEndPhysical = root->left->physicalStart + root->left->length;
-	int leftEndlogical = root->left->logicalStart + root->left->length;
+	int leftEndLogical = root->left->logicalStart + root->left->length;
 	
 	if((leftEndPhysical + 1) == root->physicalStart &&
-		(leftEndlogical + 1) == root->logicalStart &&
+		(leftEndLogical + 1) == root->logicalStart &&
 		(rootEndPhysical + 1) == root->right->physicalStart &&
-		(rootEndlogical + 1) == root->right->logicalStart &&
+		(rootEndLogical + 1) == root->right->logicalStart &&
 		root->left->buffer == root->buffer &&
 		root->buffer == root->right->buffer){
 		//consolidate left, right, center
@@ -106,7 +106,7 @@ SplayTree_t* consolidate(SplayTree_t* root){
 		root->right = destroy(root->right, root->right->logicalStart);
 	}
 	else if((leftEndPhysical + 1) == root->physicalStart &&
-		(leftEndlogical + 1) == root->logicalStart &&
+		(leftEndLogical + 1) == root->logicalStart &&
 		root->left->buffer == root->buffer){
 
 		root->physicalStart = root->left->physicalStart;
@@ -116,13 +116,14 @@ SplayTree_t* consolidate(SplayTree_t* root){
 		root->left = destroy(root->left, root->left->logicalStart);
 	}
 	else if((rootEndPhysical + 1) == root->right->physicalStart &&
-		(rootEndlogical + 1) == root->right->logicalStart &&
+		(rootEndLogical + 1) == root->right->logicalStart &&
 		root->buffer == root->right->buffer){
 
 		root->length = root->length + root->right->length;
 
 		root->right = destroy(root->right, root->right->logicalStart);
 	}
+	return root;
 }
 
 /*
