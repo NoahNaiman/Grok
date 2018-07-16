@@ -6,13 +6,20 @@
 
 #include "include/piece_chain.h"
 
-void enterRawMode(){
-	struct termios raw;
+struct termios originalTermios;
 
-	tcgetattr(STDIN_FILENO, &raw);
+void enterRawMode(){
+	tcgetattr(STDIN_FILENO, &originalTermios);
+	atexit(exitRawMode);
+	
+	struct termios raw = originalTermios;
 	raw.c_lflag &= ~(ECHO);
 
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+}
+
+void exitRawMode(){
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios)
 }
 
 int main(){
