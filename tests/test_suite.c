@@ -7,7 +7,24 @@
 #define ERROR_DELETION 0x2
 #define ERROR_TEXT_DIFFERENCE 0x3
 
-int main() {
-	SplayTree_t* newTree = 
+void print_test_result(int code){
+	if(code){
+		printf("Failed due to: ");
+		if(code & ERROR_INSERTION){
+			printf("<INSERTION ERROR>");
+		}
+		else if(code & ERROR_DELETION){
+			printf("<DELETION ERROR>");
+		}
+		else if(code & ERROR_TEXT_DIFFERENCE){
+			printf("<TEXT FORMATTING FAILURE>");
+		}
+	}
+	else{
+		printf("Test passed!");
+	}
+}
+
+int main(){
 	return 1;
 }
