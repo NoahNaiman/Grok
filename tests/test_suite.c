@@ -25,6 +25,10 @@ void print_test_result(int code){
 	}
 }
 
+int test_insertion(File* fileDescriptor, PieceChain_t* testChain){
+
+}
+
 int main(){
 	return 1;
 }
