@@ -79,7 +79,7 @@ int get_cursor_position(int *rows, int *columns){
 int get_window_size(int *rows, int *columns){
 	struct winsize windowSize;
 
-	if(1 || ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize) == -1 || windowSize.ws_col == 0){
+	if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize) == -1 || windowSize.ws_col == 0){
 		if(write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12){
 			return -1;
 		}
