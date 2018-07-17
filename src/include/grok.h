@@ -4,6 +4,12 @@
 
 #include "piece_chain.h"
 
+typedef struct{
+	int screenRows;
+	int screenColumns;
+	struct termios originalTermios;
+} TerminalConfiguration_t;
+
 /*
  * clearScreen Usage
  * --------------------------------
@@ -15,4 +21,4 @@
  *		clearScreen();	
  *	}
  */
-void clearScreen();
+void clear_screen();
