@@ -22,3 +22,5 @@ typedef struct{
  *	}
  */
 void clear_screen();
+
+char read_keypress();

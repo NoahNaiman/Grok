@@ -46,11 +46,44 @@ void enter_raw_mode(){
 		die("tcsetattr");
 	}
 }
+
+int get_cursor_position(int *rows, int *columns){
+	char buffer[32];
+
+	if(write(STDOUT_FILENO, "\x1b[6n", 4) != 4){
+		return -1;
+	}
+
+	unsigned int i = 0;
+	while(i < sizeof(buffer)-1){
+		if(read(STDIN_FILENO, &buffer[i], 1) != 1){
+			break;
+		}
+		if(buffer[i] == 'R'){
+			break;
+		}
+		i++;
+	}
+	buffer[i] = '\0';
+
+	if(buffer[0] != '\x1b' || buffer[1] != '['){
+		return -1;
+	}
+	if(sscanf(&buffer[2], "%d;%d", rows, columns) != 2){
+		return -1;
+	}
+
+	return 0;
+}
+
 int get_window_size(int *rows, int *columns){
 	struct winsize windowSize;
 
-	if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize) == -1 || windowSize.ws_col == 0){
-		return -1;
+	if(1 || ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize) == -1 || windowSize.ws_col == 0){
+		if(write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12){
+			return -1;
+		}
+		return get_cursor_position(rows, columns);
 	}
 	else{
 		*rows = windowSize.ws_row;
@@ -59,7 +92,7 @@ int get_window_size(int *rows, int *columns){
 	}
 }
 
-char read_key_press(){
+char read_keypress(){
 	int newRead;
 	char currentChar;
 	while((newRead = read(STDIN_FILENO, &currentChar, 1)) != 1){
@@ -73,7 +106,7 @@ char read_key_press(){
 /* INPUT PROCESSING */
 
 void process_keypress(){
-	char currentChar = read_key_press();
+	char currentChar = read_keypress();
 	switch(currentChar){
 		case CTRL_KEY('q'):
 			clear_screen();
@@ -85,8 +118,8 @@ void process_keypress(){
 /* OUTPUT PROCESSING */
 
 void draw_rows(){
-	int y;
-	for(y = 0; y < configuration.screenRows; y++){
+	int i;
+	for(i = 0; i < configuration.screenRows; i++){
 		write(STDOUT_FILENO, "~\r\n", 3);
 	}
 }
@@ -112,6 +145,7 @@ int main(){
 	printf("Welcome to grok!\n");
 	enter_raw_mode();
 	init_editor();
+
 
 	while(1){
 		clear_screen();
