@@ -1,7 +1,7 @@
 #Makefile to build and compile Grok text editor
 
 CC = gcc
-CFLAGS = -c -pedantic -Wall
+CFLAGS = -c -Wall
 LDFLAGS = -lncurses
 SOURCES = $(wildcard src/*.c)
 OBJECTS = $(SOURCES:.c=.o)

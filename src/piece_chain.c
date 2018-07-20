@@ -1,3 +1,4 @@
+#include <ncurses.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -138,10 +139,10 @@ void print_chain(PieceChain_t* chain, SplayTree_t* root){
 	}
 	print_chain(chain, root->left);
 	if(root->buffer == 0){
-		printf("%.*s", root->length, &chain->original[root->physicalStart]);
+		printw("%.*s", root->length, &chain->original[root->physicalStart]);
 	}
 	else{
-		printf("%.*s", root->length, &chain->add[root->physicalStart]);
+		printw("%.*s", root->length, &chain->add[root->physicalStart]);
 	}
 	print_chain(chain, root->right);
 }

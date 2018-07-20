@@ -1,4 +1,5 @@
 #include <ncurses.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -12,10 +13,12 @@ void print_text(){
 }
 
 int main(int argc, char **argv){
-	fileName = argv[1];	
+	fileName = argv[1];
 	document = init_piecechain(fileName);
-	initscr();
+	initscr();	
 	print_text();
+	refresh();
+	getch();
 	endwin();
 
 
