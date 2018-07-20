@@ -10,7 +10,7 @@
 
 /* INITIALIZER */
 
-PieceChain_t* init_piece_chain(char* fileName){
+PieceChain_t* init_piecechain(char* fileName){
 
 	PieceChain_t*  newChain = (PieceChain_t *)malloc(sizeof(PieceChain_t));
 

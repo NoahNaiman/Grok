@@ -116,7 +116,7 @@ typedef struct{
  *	-aFileName = an array of chars representing either an existing 
  *	 file or one to be created
  */
-PieceChain_t* init_piece_chain(char* fileName);
+PieceChain_t* init_piecechain(char* fileName);
 
 /*
  * record_piece Usage
