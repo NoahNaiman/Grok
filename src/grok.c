@@ -16,14 +16,15 @@ void print_text(){
 	print_chain(document, document->pieces);
 }
 
-void delete(){
-
+void backspace(){
+	getyx(stdscr, y, x);
+	move(y, x-1);
 }
 
 void handle_input(int character){
 	switch(character){
 		case KEY_DELETE:
-			printw("DELETE HIT!!!");
+			backspace();
 			refresh();
 			break;
 		default:
