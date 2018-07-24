@@ -15,6 +15,7 @@ int y = 0;
 void grok_init(){
 	initscr();
 	noecho();
+	keypad(stdscr, TRUE);
 	print_text();
 	move(0, 0);
 	scrollok(stdscr, TRUE);
@@ -23,16 +24,6 @@ void grok_init(){
 
 void print_text(){
 	print_chain(document, document->pieces);
-}
-
-void move_left(){
-	getyx(stdscr, y, x);
-	move(y, x-1);
-}
-
-void move_right(){
-	getyx(stdscr, y, x);
-	move(y, x+1);
 }
 
 void move_up(){
@@ -45,6 +36,16 @@ void move_down(){
 	move(y+1, x);
 }
 
+void move_right(){
+	getyx(stdscr, y, x);
+	move(y, x+1);
+}
+
+void move_left(){
+	getyx(stdscr, y, x);
+	move(y, x-1);
+}
+
 void delete(){
 	move_left();
 	delch();
@@ -52,9 +53,23 @@ void delete(){
 
 void handle_input(int character){
 	switch(character){
+		case KEY_BACKSPACE:
+		case KEY_DC:
 		case KEY_DELETE:
 			delete();
 			refresh();
+			break;
+		case KEY_UP:
+			move_up();
+			break;
+		case KEY_DOWN:
+			move_down();
+			break;
+		case KEY_RIGHT:
+			move_right();
+			break;
+		case KEY_LEFT:
+			move_left();
 			break;
 		default:
 			printw("%c", character);
