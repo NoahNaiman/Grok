@@ -12,19 +12,48 @@ char *fileName;
 int x = 0;
 int y = 0;
 
+void grok_init(){
+	initscr();
+	noecho();
+	print_text();
+	move(0, 0);
+	scrollok(stdscr, TRUE);
+	refresh();
+}
+
 void print_text(){
 	print_chain(document, document->pieces);
 }
 
-void backspace(){
+void move_left(){
 	getyx(stdscr, y, x);
 	move(y, x-1);
+}
+
+void move_right(){
+	getyx(stdscr, y, x);
+	move(y, x+1);
+}
+
+void move_up(){
+	getyx(stdscr, y, x);
+	move(y-1, x);
+}
+
+void move_down(){
+	getyx(stdscr, y, x);
+	move(y+1, x);
+}
+
+void delete(){
+	move_left();
+	delch();
 }
 
 void handle_input(int character){
 	switch(character){
 		case KEY_DELETE:
-			backspace();
+			delete();
 			refresh();
 			break;
 		default:
@@ -36,12 +65,7 @@ void handle_input(int character){
 int main(int argc, char **argv){
 	fileName = argv[1];
 	document = init_piecechain(fileName);
-	initscr();
-	noecho();
-	print_text();
-	move(0, 0);
-	scrollok(stdscr, TRUE);
-	refresh();
+	grok_init();
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
 		handle_input(currentChar);

@@ -3,3 +3,5 @@
 #endif
 
 #include "piece_chain.h"
+
+void print_text();
