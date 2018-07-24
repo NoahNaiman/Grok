@@ -11,14 +11,17 @@ PieceChain_t *document;
 char *fileName;
 int x = 0;
 int y = 0;
+MEVENT event;
 
 void grok_init(){
 	initscr();
 	noecho();
-	keypad(stdscr, TRUE);
+	keypad(stdscr, true);
+	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+	mouseinterval(0);
 	print_text();
 	move(0, 0);
-	scrollok(stdscr, TRUE);
+	scrollok(stdscr, true);
 	refresh();
 }
 
@@ -70,6 +73,15 @@ void handle_input(int character){
 			break;
 		case KEY_LEFT:
 			move_left();
+			break;
+		case KEY_MOUSE:
+			//MEVENT event;
+			if(getmouse(&event) == OK){
+				x = event.x;
+				y = event.y;
+				move(y, x);
+				refresh();
+			}
 			break;
 		default:
 			printw("%c", character);
