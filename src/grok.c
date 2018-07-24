@@ -9,9 +9,15 @@
 
 PieceChain_t *document;
 char *fileName;
+int x = 0;
+int y = 0;
 
 void print_text(){
 	print_chain(document, document->pieces);
+}
+
+void delete(){
+
 }
 
 void handle_input(int character){
@@ -31,8 +37,9 @@ int main(int argc, char **argv){
 	document = init_piecechain(fileName);
 	initscr();
 	noecho();
-	scrollok(stdscr, TRUE);
 	print_text();
+	move(0, 0);
+	scrollok(stdscr, TRUE);
 	refresh();
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
