@@ -5,6 +5,8 @@
 
 #include "include/grok.h"
 
+#define KEY_DELETE 127
+
 PieceChain_t *document;
 char *fileName;
 
@@ -12,13 +14,30 @@ void print_text(){
 	print_chain(document, document->pieces);
 }
 
+void handle_input(int character){
+	switch(character){
+		case KEY_DELETE:
+			printw("DELETE HIT!!!");
+			refresh();
+			break;
+		default:
+			printw("%c", character);
+			refresh();
+	}
+}
+
 int main(int argc, char **argv){
 	fileName = argv[1];
 	document = init_piecechain(fileName);
-	initscr();	
+	initscr();
+	noecho();
+	scrollok(stdscr, TRUE);
 	print_text();
 	refresh();
-	getch();
+	int currentChar;
+	while((currentChar = getch()) != 'q'){
+		handle_input(currentChar);
+	}
 	endwin();
 
 
