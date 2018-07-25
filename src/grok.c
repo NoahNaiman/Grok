@@ -13,7 +13,7 @@ void grok_init(PieceChain_t *document){
 	raw();
 	noecho();
 	nodelay(stdscr, true);
-	halfdelay(20);
+	halfdelay(15);
 	keypad(stdscr, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
@@ -51,7 +51,6 @@ void delete(y, x){
 void handle_input(int character, int y, int x, int *writeFromIndex, MEVENT event, char *pipelineBuffer, PieceChain_t *document){
 	switch(character){
 		case ERR:
-			printw("%d", *writeFromIndex);
 			if(pipelineBuffer[0] != 0){
 				int stringLength = strlen(pipelineBuffer);
 				memcpy(document->add, pipelineBuffer, stringLength);
