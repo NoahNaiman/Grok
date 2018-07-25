@@ -13,7 +13,7 @@ void grok_init(PieceChain_t *document){
 	raw();
 	noecho();
 	nodelay(stdscr, true);
-	halfdelay(30);
+	halfdelay(20);
 	keypad(stdscr, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
@@ -48,11 +48,16 @@ void delete(y, x){
 	delch();
 }
 
-void handle_input(int character, int y, int x, MEVENT event, char *pipelineBuffer){
+void handle_input(int character, int y, int x, int *writeFromIndex, MEVENT event, char *pipelineBuffer, PieceChain_t *document){
 	switch(character){
 		case ERR:
-			if(pipelineBuffer[0] != '\0'){
-
+			printw("%d", *writeFromIndex);
+			if(pipelineBuffer[0] != 0){
+				int stringLength = strlen(pipelineBuffer);
+				memcpy(document->add, pipelineBuffer, stringLength);
+				record_piece(document, 1, *writeFromIndex, stringLength);
+				*writeFromIndex = -1;
+				memset(pipelineBuffer, 0, BUFFERSIZE);
 			}
 			break;
 		case KEY_BACKSPACE:
@@ -90,15 +95,26 @@ void handle_input(int character, int y, int x, MEVENT event, char *pipelineBuffe
 int main(int argc, char **argv){
 	char *fileName  = argv[1];
 	PieceChain_t *document = init_piecechain(fileName);
-	char pipelineBuffer[BUFFERSIZE];
 	int x = 0;
 	int y = 0;
-	MEVENT event
-	;
+	int height;
+	int width;
+	getmaxyx(stdscr, height, width);
+	int writeFromIndex = -1;
+	int pipelineIndex = 0;
+	char pipelineBuffer[BUFFERSIZE];
+	MEVENT event;
+
 	grok_init(document);
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
-		handle_input(currentChar, y, x, event, pipelineBuffer);
+		if(writeFromIndex != -1){
+			writeFromIndex = (y*width)-(width-x);
+			pipelineIndex = 0;
+		}
+		handle_input(currentChar, y, x, &writeFromIndex, event, pipelineBuffer, document);
+		pipelineBuffer[pipelineIndex] = currentChar;
+		pipelineIndex++;
 	}
 	endwin();
 
