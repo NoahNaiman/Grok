@@ -5,77 +5,75 @@
 
 #include "include/grok.h"
 
+#define BUFFERSIZE 1024
 #define KEY_DELETE 127
 
-PieceChain_t *document;
-char *fileName;
-int x = 0;
-int y = 0;
-MEVENT event;
-
-void grok_init(){
+void grok_init(PieceChain_t *document){
 	initscr();
+	raw();
 	noecho();
+	nodelay(stdscr, true);
+	halfdelay(30);
 	keypad(stdscr, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
-	print_text();
+	print_chain(document, document->pieces);
 	move(0, 0);
 	scrollok(stdscr, true);
 	refresh();
 }
 
-void print_text(){
-	print_chain(document, document->pieces);
-}
-
-void move_up(){
+void move_up(y, x){
 	getyx(stdscr, y, x);
 	move(y-1, x);
 }
 
-void move_down(){
+void move_down(y, x){
 	getyx(stdscr, y, x);
 	move(y+1, x);
 }
 
-void move_right(){
+void move_right(y, x){
 	getyx(stdscr, y, x);
 	move(y, x+1);
 }
 
-void move_left(){
+void move_left(y, x){
 	getyx(stdscr, y, x);
 	move(y, x-1);
 }
 
-void delete(){
-	move_left();
+void delete(y, x){
+	move_left(y, x);
 	delch();
 }
 
-void handle_input(int character){
+void handle_input(int character, int y, int x, MEVENT event, char *pipelineBuffer){
 	switch(character){
+		case ERR:
+			if(pipelineBuffer[0] != '\0'){
+
+			}
+			break;
 		case KEY_BACKSPACE:
 		case KEY_DC:
 		case KEY_DELETE:
-			delete();
+			delete(y, x);
 			refresh();
 			break;
 		case KEY_UP:
-			move_up();
+			move_up(y, x);
 			break;
 		case KEY_DOWN:
-			move_down();
+			move_down(y, x);
 			break;
 		case KEY_RIGHT:
-			move_right();
+			move_right(y, x);
 			break;
 		case KEY_LEFT:
-			move_left();
+			move_left(y, x);
 			break;
 		case KEY_MOUSE:
-			//MEVENT event;
 			if(getmouse(&event) == OK){
 				x = event.x;
 				y = event.y;
@@ -90,12 +88,17 @@ void handle_input(int character){
 }
 
 int main(int argc, char **argv){
-	fileName = argv[1];
-	document = init_piecechain(fileName);
-	grok_init();
+	char *fileName  = argv[1];
+	PieceChain_t *document = init_piecechain(fileName);
+	char pipelineBuffer[BUFFERSIZE];
+	int x = 0;
+	int y = 0;
+	MEVENT event
+	;
+	grok_init(document);
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
-		handle_input(currentChar);
+		handle_input(currentChar, y, x, event, pipelineBuffer);
 	}
 	endwin();
 
