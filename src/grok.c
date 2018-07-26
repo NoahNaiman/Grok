@@ -7,6 +7,7 @@
 
 #define BUFFERSIZE 1024
 #define KEY_DELETE 127
+#define KEY_ESCAPE 27
 
 void grok_init(PieceChain_t *document){
 	initscr();
@@ -23,70 +24,89 @@ void grok_init(PieceChain_t *document){
 	refresh();
 }
 
-void move_up(y, x){
-	getyx(stdscr, y, x);
-	move(y-1, x);
+Grokker_t* init_grokker(){
+	Grokker_t* newGrokker = (Grokker_t *)malloc(sizeof(Grokker_t));
+	newGrokker->cursorX = 0;
+	newGrokker->cursorY = 0;
+	getmaxyx(stdscr, newGrokker->height, newGrokker->width);
+	newGrokker->logicalStart = -1;
+	newGrokker->pipelineIndex = 0;
+	newGrokker->pipelineToChain = (char *)malloc(BUFFERSIZE * sizeof(char));
+	return newGrokker;
 }
 
-void move_down(y, x){
-	getyx(stdscr, y, x);
-	move(y+1, x);
+void move_up(cursorY, cursorX){
+	getyx(stdscr, cursorY, cursorX);
+	move(cursorY-1, cursorX);
 }
 
-void move_right(y, x){
-	getyx(stdscr, y, x);
-	move(y, x+1);
+void move_down(cursorY, cursorX){
+	getyx(stdscr, cursorY, cursorX);
+	move(cursorY+1, cursorX);
 }
 
-void move_left(y, x){
-	getyx(stdscr, y, x);
-	move(y, x-1);
+void move_right(cursorY, cursorX){
+	getyx(stdscr, cursorY, cursorX);
+	move(cursorY, cursorX+1);
 }
 
-void delete(y, x){
-	move_left(y, x);
+void move_left(cursorY, cursorX){
+	getyx(stdscr, cursorY, cursorX);
+	move(cursorY, cursorX-1);
+}
+
+void delete(cursorY, cursorX){
+	move_left(cursorY, cursorX);
 	delch();
 }
 
-void handle_input(int character, int y, int x, int *writeFromIndex, MEVENT event, char *pipelineBuffer, PieceChain_t *document){
+void handle_input(int character, Grokker_t *mainControl, MEVENT event, PieceChain_t *document){
 	switch(character){
 		case ERR:
-			if(pipelineBuffer[0] != 0){
+			if(pipelineBuffer[0] != '\0'){
 				int stringLength = strlen(pipelineBuffer);
 				memcpy(document->add, pipelineBuffer, stringLength);
-				record_piece(document, 1, *writeFromIndex, stringLength);
-				*writeFromIndex = -1;
-				memset(pipelineBuffer, 0, BUFFERSIZE);
+				record_piece(document, 1, *logicalStart, stringLength);
+				*logicalStart = -1;
+				memset(pipelineBuffer, '\0', BUFFERSIZE);
+				printw("pipelineBuffer[0]: %s", pipelineBuffer[0]);
 			}
 			break;
 		case KEY_BACKSPACE:
 		case KEY_DC:
 		case KEY_DELETE:
-			delete(y, x);
+			delete(cursorY, cursorX);
 			refresh();
 			break;
+		case KEY_ESCAPE:
+			printw("EXIT PRESSED");
 		case KEY_UP:
-			move_up(y, x);
+			move_up(cursorY, cursorX);
 			break;
 		case KEY_DOWN:
-			move_down(y, x);
+			move_down(cursorY, cursorX);
 			break;
 		case KEY_RIGHT:
-			move_right(y, x);
+			move_right(cursorY, cursorX);
 			break;
 		case KEY_LEFT:
-			move_left(y, x);
+			move_left(cursorY, cursorX);
 			break;
 		case KEY_MOUSE:
 			if(getmouse(&event) == OK){
-				x = event.x;
-				y = event.y;
-				move(y, x);
+				cursorX = event.x;
+				cursorY = event.y;
+				move(cursorY, cursorX);
 				refresh();
 			}
 			break;
 		default:
 			printw("%c", character);
+			printw("Hello");
+			pipelineBuffer[*pipelineIndex] = character;
+			printw("Before: %u", *pipelineIndex);
+			*pipelineIndex += sizeof(char);
+			printw("After: %u", *pipelineIndex);
 			refresh();
 	}
 }
@@ -94,26 +114,28 @@ void handle_input(int character, int y, int x, int *writeFromIndex, MEVENT event
 int main(int argc, char **argv){
 	char *fileName  = argv[1];
 	PieceChain_t *document = init_piecechain(fileName);
-	int x = 0;
-	int y = 0;
-	int height;
-	int width;
-	getmaxyx(stdscr, height, width);
-	int writeFromIndex = -1;
-	int pipelineIndex = 0;
-	char pipelineBuffer[BUFFERSIZE];
 	MEVENT event;
 
 	grok_init(document);
+	Grokker_t* mainControl = init_grokker();
+
+	int *logicalStart = mainControl->logicalStart;
+	int *pipelineIndex = mainControl->pipelineIndex;
+	int *cursorX = mainControl->cursorX;
+	int *cursorY = mainControl->cursorY;
+	int *height = mainControl->height;
+	int *width = mainControl->width;
+
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
-		if(writeFromIndex != -1){
-			writeFromIndex = (y*width)-(width-x);
+		if(logicalStart != -1){
+			logicalStart = ((*cursorY) * (*width))-((*width)-(*cursorX));
 			pipelineIndex = 0;
 		}
-		handle_input(currentChar, y, x, &writeFromIndex, event, pipelineBuffer, document);
-		pipelineBuffer[pipelineIndex] = currentChar;
-		pipelineIndex++;
+		printw("%d\n", logicalStart);
+		printw("%d\n", pipelineIndex);
+		printw("%d\n", cursorX);
+		printw("%d\n", cursorY);
 	}
 	endwin();
 

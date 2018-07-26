@@ -66,13 +66,14 @@ PieceChain_t* init_piecechain(char* fileName){
  *		 physical one
  */
 int get_logical_start(SplayTree_t* root, int index){
+	int physicalStart = root->physicalStart;
 	if(root == NULL){
 		return -1;
 	}
-	else if(index >= root->physicalStart && index <= (root->physicalStart + root->length)){
-		return root->logicalStart + (index - root->physicalStart);
+	else if(index >= physicalStart && index <= (physicalStart + root->length)){
+		return root->logicalStart + (index - physicalStart);
 	}
-	else if(index < root->physicalStart){
+	else if(index < physicalStart){
 		return get_logical_start(root->left, index);
 	}
 	else{
@@ -102,13 +103,14 @@ int get_logical_start(SplayTree_t* root, int index){
  *		 logical one
  */
 int get_physical_start(SplayTree_t* root, int index){
+	int logicalStart = root->logicalStart;
 	if(root == NULL){
 		return -1;
 	}
-	else if(index >= root->logicalStart && index <= (root->logicalStart + root->length)){
-		return root->physicalStart + (index - root->logicalStart);
+	else if(index >= logicalStart && index <= (logicalStart + root->length)){
+		return root->physicalStart + (index - logicalStart);
 	}
-	else if(index < root->logicalStart){
+	else if(index < logicalStart){
 		return get_physical_start(root->left, index);
 	}
 	else{
