@@ -66,14 +66,14 @@ void handle_input(int character, Grokker_t *mainControl, MEVENT event, PieceChai
 			printw("index1: %d ", mainControl->pipelineIndex);
 			if(mainControl->pipelineBuffer[0] != '\0'){
 				char *pipelineBuffer = mainControl->pipelineBuffer;
-				printw("%s ", pipelineBuffer);
+				//printw("%s ", pipelineBuffer);
 				/*printw("%d ", mainControl->index);
 				int stringLength = strlen(mainControl->pipelineBuffer);
 				memcpy(document->add, mainControl->pipelineBuffer, stringLength);
 				record_piece(document, 1, *logicalStart, stringLength);
 				*logicalStart = -1;
-				memset(pipelineBuffer, '\0', BUFFERSIZE);
-				printw("pipelineBuffer[0]: %s", pipelineBuffer[0]);*/
+				memset(pipelineBuffer, '\0', BUFFERSIZE);*/
+				printw("pipelineBuffer[0]: %c", mainControl->pipelineBuffer[0]);
 			}
 			break;
 		case KEY_BACKSPACE:
