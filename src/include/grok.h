@@ -45,5 +45,5 @@ typedef struct{
 	int width;
 	int logicalStart;
 	int pipelineIndex;
-	char *pipelineToChain;
+	char *pipelineBuffer;
 } Grokker_t;

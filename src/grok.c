@@ -14,7 +14,7 @@ void grok_init(PieceChain_t *document){
 	raw();
 	noecho();
 	nodelay(stdscr, true);
-	halfdelay(15);
+	halfdelay(25);
 	keypad(stdscr, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
@@ -31,7 +31,7 @@ Grokker_t* init_grokker(){
 	getmaxyx(stdscr, newGrokker->height, newGrokker->width);
 	newGrokker->logicalStart = -1;
 	newGrokker->pipelineIndex = 0;
-	newGrokker->pipelineToChain = (char *)malloc(BUFFERSIZE * sizeof(char));
+	newGrokker->pipelineBuffer = (char *)malloc(BUFFERSIZE * sizeof(char));
 	return newGrokker;
 }
 
@@ -63,50 +63,54 @@ void delete(cursorY, cursorX){
 void handle_input(int character, Grokker_t *mainControl, MEVENT event, PieceChain_t *document){
 	switch(character){
 		case ERR:
-			if(pipelineBuffer[0] != '\0'){
-				int stringLength = strlen(pipelineBuffer);
-				memcpy(document->add, pipelineBuffer, stringLength);
+			printw("index1: %d ", mainControl->pipelineIndex);
+			if(mainControl->pipelineBuffer[0] != '\0'){
+				char *pipelineBuffer = mainControl->pipelineBuffer;
+				printw("%s ", pipelineBuffer);
+				/*printw("%d ", mainControl->index);
+				int stringLength = strlen(mainControl->pipelineBuffer);
+				memcpy(document->add, mainControl->pipelineBuffer, stringLength);
 				record_piece(document, 1, *logicalStart, stringLength);
 				*logicalStart = -1;
 				memset(pipelineBuffer, '\0', BUFFERSIZE);
-				printw("pipelineBuffer[0]: %s", pipelineBuffer[0]);
+				printw("pipelineBuffer[0]: %s", pipelineBuffer[0]);*/
 			}
 			break;
 		case KEY_BACKSPACE:
 		case KEY_DC:
 		case KEY_DELETE:
-			delete(cursorY, cursorX);
+			delete(mainControl->cursorY, mainControl->cursorX);
 			refresh();
 			break;
 		case KEY_ESCAPE:
 			printw("EXIT PRESSED");
 		case KEY_UP:
-			move_up(cursorY, cursorX);
+			move_up(mainControl->cursorY, mainControl->cursorX);
 			break;
 		case KEY_DOWN:
-			move_down(cursorY, cursorX);
+			move_down(mainControl->cursorY, mainControl->cursorX);
 			break;
 		case KEY_RIGHT:
-			move_right(cursorY, cursorX);
+			move_right(mainControl->cursorY, mainControl->cursorX);
 			break;
 		case KEY_LEFT:
-			move_left(cursorY, cursorX);
+			move_left(mainControl->cursorY, mainControl->cursorX);
 			break;
 		case KEY_MOUSE:
 			if(getmouse(&event) == OK){
-				cursorX = event.x;
-				cursorY = event.y;
-				move(cursorY, cursorX);
+				mainControl->cursorX = event.x;
+				mainControl->cursorY = event.y;
+				move(mainControl->cursorY, mainControl->cursorX);
 				refresh();
 			}
 			break;
 		default:
 			printw("%c", character);
-			printw("Hello");
-			pipelineBuffer[*pipelineIndex] = character;
-			printw("Before: %u", *pipelineIndex);
-			*pipelineIndex += sizeof(char);
-			printw("After: %u", *pipelineIndex);
+			int *index = &mainControl->pipelineIndex;
+			mainControl->pipelineBuffer[*index] = character;
+			printw("def index: %d ", *index);
+			*index += sizeof(char);
+			printw("def index: %d ", *index);
 			refresh();
 	}
 }
@@ -119,23 +123,20 @@ int main(int argc, char **argv){
 	grok_init(document);
 	Grokker_t* mainControl = init_grokker();
 
-	int *logicalStart = mainControl->logicalStart;
-	int *pipelineIndex = mainControl->pipelineIndex;
-	int *cursorX = mainControl->cursorX;
-	int *cursorY = mainControl->cursorY;
-	int *height = mainControl->height;
-	int *width = mainControl->width;
+	int *logicalStart = &mainControl->logicalStart;
+	int *pipelineIndex = &mainControl->pipelineIndex;
+	int *cursorX = &mainControl->cursorX;
+	int *cursorY = &mainControl->cursorY;
+	int *height = &mainControl->height;
+	int *width = &mainControl->width;
 
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
-		if(logicalStart != -1){
-			logicalStart = ((*cursorY) * (*width))-((*width)-(*cursorX));
-			pipelineIndex = 0;
+		if(*logicalStart == -1){
+			*logicalStart = ((*cursorY)*(*width))-((*width)-(*cursorX));
+			*pipelineIndex = 0;
 		}
-		printw("%d\n", logicalStart);
-		printw("%d\n", pipelineIndex);
-		printw("%d\n", cursorX);
-		printw("%d\n", cursorY);
+		handle_input(currentChar, mainControl, event, document);
 	}
 	endwin();
 
