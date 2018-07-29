@@ -55,9 +55,9 @@ void handle_input(int character, int cursorX, int cursorY, int logicalStart, int
 			if(*pipelineBuffer[0] != '\0'){
 				int stringLength = strlen(*pipelineBuffer);
 				memcpy(document->add, *pipelineBuffer, stringLength);
-				/*record_piece(document, 1, logicalStart, stringLength);
+				record_piece(document, 1, logicalStart, stringLength);
 				logicalStart = -1;
-				memset(pipelineBuffer, '\0', BUFFERSIZE);*/
+				memset(pipelineBuffer, '\0', BUFFERSIZE);
 				printw("pipelineBuffer[0]: %s", *pipelineBuffer);
 			}
 			break;
@@ -92,9 +92,7 @@ void handle_input(int character, int cursorX, int cursorY, int logicalStart, int
 		default:
 			printw("%c", character);
 			*pipelineBuffer[*pipelineIndex] = character;
-			printw("def index: %d ", *pipelineIndex);
 			*pipelineIndex += sizeof(char);
-			printw("def index: %d ", *pipelineIndex);
 			refresh();
 	}
 }
