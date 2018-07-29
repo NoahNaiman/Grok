@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "include/grok.h"
+#include "include/piece_chain.h"
 
 #define BUFFERSIZE 1024
 #define KEY_DELETE 127
@@ -49,16 +49,16 @@ void delete(cursorY, cursorX){
 	delch();
 }
 
-void handle_input(int character, int cursorX, int cursorY, int logicalStart, int *pipelineIndex, char *pipelineBuffer, MEVENT event, PieceChain_t *document){
+void handle_input(int character, int cursorX, int cursorY, int logicalStart, int *pipelineIndex, char **pipelineBuffer, MEVENT event, PieceChain_t *document){
 	switch(character){
 		case ERR:
-			if(pipelineBuffer[0] != '\0'){
-				/*int stringLength = strlen(pipelineBuffer);
-				memcpy(document->add, pipelineBuffer, stringLength);
-				record_piece(document, 1, logicalStart, stringLength);
+			if(*pipelineBuffer[0] != '\0'){
+				int stringLength = strlen(*pipelineBuffer);
+				memcpy(document->add, *pipelineBuffer, stringLength);
+				/*record_piece(document, 1, logicalStart, stringLength);
 				logicalStart = -1;
 				memset(pipelineBuffer, '\0', BUFFERSIZE);*/
-				printw("pipelineBuffer[0]: %s", pipelineBuffer);
+				printw("pipelineBuffer[0]: %s", *pipelineBuffer);
 			}
 			break;
 		case KEY_BACKSPACE:
@@ -91,7 +91,7 @@ void handle_input(int character, int cursorX, int cursorY, int logicalStart, int
 			break;
 		default:
 			printw("%c", character);
-			pipelineBuffer[*pipelineIndex] = character;
+			*pipelineBuffer[*pipelineIndex] = character;
 			printw("def index: %d ", *pipelineIndex);
 			*pipelineIndex += sizeof(char);
 			printw("def index: %d ", *pipelineIndex);
@@ -112,7 +112,7 @@ int main(int argc, char **argv){
 	int width;
 	int logicalStart = -1;
 	int pipelineIndex = 0;
-	char pipelineBuffer[BUFFERSIZE];
+	char *pipelineBuffer = (char *)malloc(BUFFERSIZE * sizeof(char));
 
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
@@ -121,7 +121,7 @@ int main(int argc, char **argv){
 			logicalStart = ((cursorY * width)-(width - cursorX));
 			pipelineIndex = 0;
 		}
-		handle_input(currentChar, cursorX, cursorY, logicalStart, &pipelineIndex, pipelineBuffer, event, document);
+		handle_input(currentChar, cursorX, cursorY, logicalStart, &pipelineIndex, &pipelineBuffer, event, document);
 	}
 	endwin();
 
