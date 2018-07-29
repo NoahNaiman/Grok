@@ -9,7 +9,7 @@
 #define KEY_DELETE 127
 #define KEY_ESCAPE 27
 
-void grok_init(PieceChain_t *document){
+void init_grok(PieceChain_t *document){
 	initscr();
 	raw();
 	noecho();
@@ -22,17 +22,6 @@ void grok_init(PieceChain_t *document){
 	move(0, 0);
 	scrollok(stdscr, true);
 	refresh();
-}
-
-Grokker_t* init_grokker(){
-	Grokker_t* newGrokker = (Grokker_t *)malloc(sizeof(Grokker_t));
-	newGrokker->cursorX = 0;
-	newGrokker->cursorY = 0;
-	getmaxyx(stdscr, newGrokker->height, newGrokker->width);
-	newGrokker->logicalStart = -1;
-	newGrokker->pipelineIndex = 0;
-	newGrokker->pipelineBuffer = (char *)malloc(BUFFERSIZE * sizeof(char));
-	return newGrokker;
 }
 
 void move_up(cursorY, cursorX){
@@ -60,57 +49,52 @@ void delete(cursorY, cursorX){
 	delch();
 }
 
-void handle_input(int character, Grokker_t *mainControl, MEVENT event, PieceChain_t *document){
+void handle_input(int character, int cursorX, int cursorY, int logicalStart, int *pipelineIndex, char *pipelineBuffer, MEVENT event, PieceChain_t *document){
 	switch(character){
 		case ERR:
-			printw("index1: %d ", mainControl->pipelineIndex);
-			if(mainControl->pipelineBuffer[0] != '\0'){
-				char *pipelineBuffer = mainControl->pipelineBuffer;
-				//printw("%s ", pipelineBuffer);
-				/*printw("%d ", mainControl->index);
-				int stringLength = strlen(mainControl->pipelineBuffer);
-				memcpy(document->add, mainControl->pipelineBuffer, stringLength);
-				record_piece(document, 1, *logicalStart, stringLength);
-				*logicalStart = -1;
+			if(pipelineBuffer[0] != '\0'){
+				/*int stringLength = strlen(pipelineBuffer);
+				memcpy(document->add, pipelineBuffer, stringLength);
+				record_piece(document, 1, logicalStart, stringLength);
+				logicalStart = -1;
 				memset(pipelineBuffer, '\0', BUFFERSIZE);*/
-				printw("pipelineBuffer[0]: %c", mainControl->pipelineBuffer[0]);
+				printw("pipelineBuffer[0]: %s", pipelineBuffer);
 			}
 			break;
 		case KEY_BACKSPACE:
 		case KEY_DC:
 		case KEY_DELETE:
-			delete(mainControl->cursorY, mainControl->cursorX);
+			delete(cursorY, cursorX);
 			refresh();
 			break;
 		case KEY_ESCAPE:
 			printw("EXIT PRESSED");
 		case KEY_UP:
-			move_up(mainControl->cursorY, mainControl->cursorX);
+			move_up(cursorY, cursorX);
 			break;
 		case KEY_DOWN:
-			move_down(mainControl->cursorY, mainControl->cursorX);
+			move_down(cursorY, cursorX);
 			break;
 		case KEY_RIGHT:
-			move_right(mainControl->cursorY, mainControl->cursorX);
+			move_right(cursorY, cursorX);
 			break;
 		case KEY_LEFT:
-			move_left(mainControl->cursorY, mainControl->cursorX);
+			move_left(cursorY, cursorX);
 			break;
 		case KEY_MOUSE:
 			if(getmouse(&event) == OK){
-				mainControl->cursorX = event.x;
-				mainControl->cursorY = event.y;
-				move(mainControl->cursorY, mainControl->cursorX);
+				cursorX = event.x;
+				cursorY = event.y;
+				move(cursorY, cursorX);
 				refresh();
 			}
 			break;
 		default:
 			printw("%c", character);
-			int *index = &mainControl->pipelineIndex;
-			mainControl->pipelineBuffer[*index] = character;
-			printw("def index: %d ", *index);
-			*index += sizeof(char);
-			printw("def index: %d ", *index);
+			pipelineBuffer[*pipelineIndex] = character;
+			printw("def index: %d ", *pipelineIndex);
+			*pipelineIndex += sizeof(char);
+			printw("def index: %d ", *pipelineIndex);
 			refresh();
 	}
 }
@@ -120,23 +104,24 @@ int main(int argc, char **argv){
 	PieceChain_t *document = init_piecechain(fileName);
 	MEVENT event;
 
-	grok_init(document);
-	Grokker_t* mainControl = init_grokker();
+	init_grok(document);
 
-	int *logicalStart = &mainControl->logicalStart;
-	int *pipelineIndex = &mainControl->pipelineIndex;
-	int *cursorX = &mainControl->cursorX;
-	int *cursorY = &mainControl->cursorY;
-	int *height = &mainControl->height;
-	int *width = &mainControl->width;
+	int cursorX = 0;
+	int cursorY = 0;
+	int height;
+	int width;
+	int logicalStart = -1;
+	int pipelineIndex = 0;
+	char pipelineBuffer[BUFFERSIZE];
 
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
-		if(*logicalStart == -1){
-			*logicalStart = ((*cursorY)*(*width))-((*width)-(*cursorX));
-			*pipelineIndex = 0;
+		if(logicalStart == -1){
+			getmaxyx(stdscr, height, width);
+			logicalStart = ((cursorY * width)-(width - cursorX));
+			pipelineIndex = 0;
 		}
-		handle_input(currentChar, mainControl, event, document);
+		handle_input(currentChar, cursorX, cursorY, logicalStart, &pipelineIndex, pipelineBuffer, event, document);
 	}
 	endwin();
 
