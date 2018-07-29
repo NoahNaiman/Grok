@@ -49,16 +49,16 @@ void delete(cursorY, cursorX){
 	delch();
 }
 
-void handle_input(int character, int cursorX, int cursorY, int logicalStart, int *pipelineIndex, char **pipelineBuffer, MEVENT event, PieceChain_t *document){
+void handle_input(int character, int cursorX, int cursorY, int logicalStart, int *pipelineIndex, char *pipelineBuffer, MEVENT event, PieceChain_t *document){
 	switch(character){
 		case ERR:
-			if(*pipelineBuffer[0] != '\0'){
-				int stringLength = strlen(*pipelineBuffer);
-				memcpy(document->add, *pipelineBuffer, stringLength);
+			if(pipelineBuffer[0] != '\0'){
+				int stringLength = strlen(pipelineBuffer);
+				/*memcpy(document->add, pipelineBuffer, stringLength);
 				record_piece(document, 1, logicalStart, stringLength);
 				logicalStart = -1;
-				memset(pipelineBuffer, '\0', BUFFERSIZE);
-				printw("pipelineBuffer[0]: %s", *pipelineBuffer);
+				memset(pipelineBuffer, '\0', BUFFERSIZE);*/
+				printw("pipelineBuffer: %s", pipelineBuffer);
 			}
 			break;
 		case KEY_BACKSPACE:
@@ -91,8 +91,10 @@ void handle_input(int character, int cursorX, int cursorY, int logicalStart, int
 			break;
 		default:
 			printw("%c", character);
-			*pipelineBuffer[*pipelineIndex] = character;
+			//printw("PipelineIndex: %d", *pipelineIndex);
+			pipelineBuffer[*pipelineIndex] = character;
 			*pipelineIndex += sizeof(char);
+			//printw("PipelineIndex: %d", *pipelineIndex);
 			refresh();
 	}
 }
@@ -110,7 +112,7 @@ int main(int argc, char **argv){
 	int width;
 	int logicalStart = -1;
 	int pipelineIndex = 0;
-	char *pipelineBuffer = (char *)malloc(BUFFERSIZE * sizeof(char));
+	char pipelineBuffer[BUFFERSIZE];
 
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
@@ -119,7 +121,7 @@ int main(int argc, char **argv){
 			logicalStart = ((cursorY * width)-(width - cursorX));
 			pipelineIndex = 0;
 		}
-		handle_input(currentChar, cursorX, cursorY, logicalStart, &pipelineIndex, &pipelineBuffer, event, document);
+		handle_input(currentChar, cursorX, cursorY, logicalStart, &pipelineIndex, pipelineBuffer, event, document);
 	}
 	endwin();
 
