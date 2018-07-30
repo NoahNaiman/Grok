@@ -59,7 +59,7 @@ void handle_input(int character, int cursorX, int cursorY, int *logicalStart, in
 				int height;
 				int width;
 				getmaxyx(stdscr, height, width);
-				*logicalStart = ((cursorY * width)-(width - cursorX));
+				*logicalStart = (cursorY * width) - cursorX;
 				*pipelineIndex = 0;
 				memset(pipelineBuffer, '\0', BUFFERSIZE);
 			}
@@ -93,6 +93,12 @@ void handle_input(int character, int cursorX, int cursorY, int *logicalStart, in
 			}
 			break;
 		default:
+			if(*logicalStart == -1){
+				int height;
+				int width;
+				getmaxyx(stdscr, height, width);
+				*logicalStart = ((cursorY * width)-cursorX);
+			}
 			printw("%c", character);
 			//printw("PipelineIndex: %d", *pipelineIndex);
 			pipelineBuffer[*pipelineIndex] = character;
@@ -111,10 +117,7 @@ int main(int argc, char **argv){
 
 	int cursorX = 0;
 	int cursorY = 0;
-	int height;
-	int width;
-	getmaxyx(stdscr, height, width);
-	int logicalStart = ((cursorY * width)-cursorX);
+	int logicalStart = -1;
 	int pipelineIndex = 0;
 	char pipelineBuffer[BUFFERSIZE];
 
