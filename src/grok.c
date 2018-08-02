@@ -18,9 +18,10 @@ void init_grok(PieceChain_t *document){
 	keypad(stdscr, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
+	scrollok(stdscr, true);
 	print_chain(document, document->pieces);
 	move(0, 0);
-	scrollok(stdscr, true);
+	//scrollok(stdscr, true);
 	refresh();
 }
 
