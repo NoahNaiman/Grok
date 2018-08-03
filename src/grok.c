@@ -21,7 +21,6 @@ void init_grok(PieceChain_t *document){
 	scrollok(stdscr, true);
 	print_chain(document, document->pieces);
 	move(0, 0);
-	//scrollok(stdscr, true);
 	refresh();
 }
 
