@@ -25,32 +25,32 @@ void init_grok(PieceChain_t *document){
 	refresh();
 }
 
-void move_up(int cursorY, int cursorX){
-	getyx(stdscr, cursorY, cursorX);
-	move(cursorY-1, cursorX);
+void move_up(int *cursorY, int *cursorX){
+	*cursorY -= sizeof(char);
+	move(*cursorY, *cursorX);
 }
 
-void move_down(int cursorY, int cursorX){
-	getyx(stdscr, cursorY, cursorX);
-	move(cursorY+1, cursorX);
+void move_down(int *cursorY, int *cursorX){
+	*cursorY += sizeof(char);
+	move(*cursorY, *cursorX);
 }
 
-void move_right(int cursorY, int cursorX){
-	getyx(stdscr, cursorY, cursorX);
-	move(cursorY, cursorX+1);
+void move_right(int *cursorY, int *cursorX){
+	*cursorX += sizeof(char);
+	move(*cursorY, *cursorX);
 }
 
-void move_left(int cursorY, int cursorX){
-	getyx(stdscr, cursorY, cursorX);
-	move(cursorY, cursorX-1);
+void move_left(int *cursorY, int *cursorX){
+	*cursorX -= sizeof(char);
+	move(*cursorY, *cursorX);
 }
 
-void delete(int cursorY, int cursorX){
+void delete(int *cursorY, int *cursorX){
 	move_left(cursorY, cursorX);
 	delch();
 }
 
-void handle_input(int character, int cursorX, int cursorY, int *logicalStart, int *pipelineIndex, char *pipelineBuffer, MEVENT event, PieceChain_t *document){
+void handle_input(int character, int *cursorX, int *cursorY, int *logicalStart, int *pipelineIndex, char *pipelineBuffer, MEVENT event, PieceChain_t *document){
 	switch(character){
 		case ERR:
 			if(pipelineBuffer[0] != '\0'){
@@ -60,7 +60,7 @@ void handle_input(int character, int cursorX, int cursorY, int *logicalStart, in
 				int height;
 				int width;
 				getmaxyx(stdscr, height, width);
-				*logicalStart = (cursorY * width) - cursorX;
+				*logicalStart = ((*cursorY) * width) - (*cursorX);
 				*pipelineIndex = 0;
 				memset(pipelineBuffer, '\0', BUFFERSIZE);
 			}
@@ -87,9 +87,9 @@ void handle_input(int character, int cursorX, int cursorY, int *logicalStart, in
 			break;
 		case KEY_MOUSE:
 			if(getmouse(&event) == OK){
-				cursorX = event.x;
-				cursorY = event.y;
-				move(cursorY, cursorX);
+				*cursorX = event.x;
+				*cursorY = event.y;
+				move(*cursorY, *cursorX);
 				refresh();
 			}
 			break;
@@ -98,13 +98,11 @@ void handle_input(int character, int cursorX, int cursorY, int *logicalStart, in
 				int height;
 				int width;
 				getmaxyx(stdscr, height, width);
-				*logicalStart = ((cursorY * width)-cursorX);
+				*logicalStart = ((*cursorY * width)-(*cursorX));
 			}
 			printw("%c", character);
-			//printw("PipelineIndex: %d", *pipelineIndex);
 			pipelineBuffer[*pipelineIndex] = character;
 			*pipelineIndex += sizeof(char);
-			//printw("PipelineIndex: %d", *pipelineIndex);
 			refresh();
 	}
 }
@@ -124,7 +122,7 @@ int main(int argc, char **argv){
 
 	int currentChar;
 	while((currentChar = getch()) != 'q'){
-		handle_input(currentChar, cursorX, cursorY, &logicalStart, &pipelineIndex, pipelineBuffer, event, document);
+		handle_input(currentChar, &cursorX, &cursorY, &logicalStart, &pipelineIndex, pipelineBuffer, event, document);
 	}
 	endwin();
 
