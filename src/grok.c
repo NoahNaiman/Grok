@@ -18,33 +18,34 @@ void init_grok(PieceChain_t *document){
 	keypad(stdscr, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
-	print_chain(document, document->pieces);
-	//scrollok(stdscr, true);
+	idlok(stdscr, true);
+	printw("%s\n", document->original);
+	scrollok(stdscr, true);
 	move(0, 0);
 	refresh();
 }
 
-void move_up(cursorY, cursorX){
+void move_up(int cursorY, int cursorX){
 	getyx(stdscr, cursorY, cursorX);
 	move(cursorY-1, cursorX);
 }
 
-void move_down(cursorY, cursorX){
+void move_down(int cursorY, int cursorX){
 	getyx(stdscr, cursorY, cursorX);
 	move(cursorY+1, cursorX);
 }
 
-void move_right(cursorY, cursorX){
+void move_right(int cursorY, int cursorX){
 	getyx(stdscr, cursorY, cursorX);
 	move(cursorY, cursorX+1);
 }
 
-void move_left(cursorY, cursorX){
+void move_left(int cursorY, int cursorX){
 	getyx(stdscr, cursorY, cursorX);
 	move(cursorY, cursorX-1);
 }
 
-void delete(cursorY, cursorX){
+void delete(int cursorY, int cursorX){
 	move_left(cursorY, cursorX);
 	delch();
 }
