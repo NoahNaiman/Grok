@@ -18,31 +18,74 @@ void init_grok(PieceChain_t *document){
 	keypad(stdscr, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
-	idlok(stdscr, true);
+	//idlok(stdscr, true);
 	printw("%s\n", document->original);
 	scrollok(stdscr, true);
 	move(0, 0);
 	refresh();
 }
 
+//TODO: CHECK IF THERE IS ANYTHING ABOVE
 void move_up(int *cursorY, int *cursorX){
-	*cursorY -= sizeof(char);
-	move(*cursorY, *cursorX);
+	if((int)(*cursorY-sizeof(char)) < 0){
+		scrl(-1);
+		move(0, *cursorX);
+	}
+	else{
+		*cursorY -= sizeof(char);
+		move(*cursorY, *cursorX);
+	}
 }
 
 void move_down(int *cursorY, int *cursorX){
-	*cursorY += sizeof(char);
-	move(*cursorY, *cursorX);
+	int height;
+	int width;
+	getmaxyx(stdscr, height, width);
+	if((int)(*cursorY+sizeof(char)) >= height){
+		scroll(stdscr);
+		move(height, *cursorX);
+	}
+	else{
+		*cursorY += sizeof(char);
+		move(*cursorY, *cursorX);
+	}
 }
 
 void move_right(int *cursorY, int *cursorX){
-	*cursorX += sizeof(char);
-	move(*cursorY, *cursorX);
+	int height;
+	int width;
+	getmaxyx(stdscr, height, width);
+	if((int)(*cursorX+sizeof(char)) >= width){
+		*cursorY += sizeof(char);
+		*cursorX = 0;
+		move(*cursorY, *cursorX);
+	}
+	else{
+		*cursorX += sizeof(char);
+		move(*cursorY, *cursorX);
+	}
 }
 
 void move_left(int *cursorY, int *cursorX){
-	*cursorX -= sizeof(char);
-	move(*cursorY, *cursorX);
+	int height;
+	int width;
+	getmaxyx(stdscr, height, width);
+	if((int)(*cursorX-sizeof(char)) <= 0){
+		if(*cursorY == 0){
+			*cursorX = width;
+			move(*cursorY, width);
+			scrl(-1);
+		}
+		else{
+			*cursorY -= sizeof(char);
+			*cursorX = width;
+			move(*cursorY, *cursorX);
+		}
+	}
+	else{
+		*cursorX -= sizeof(char);
+		move(*cursorY, *cursorX);
+	}
 }
 
 void delete(int *cursorY, int *cursorX){
