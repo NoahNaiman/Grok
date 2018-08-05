@@ -51,14 +51,22 @@ void move_down(int *cursorY, int *cursorX){
 	}
 }
 
+//TODO: FIX WEIRD SCROLLING ISSUES
 void move_right(int *cursorY, int *cursorX){
 	int height;
 	int width;
 	getmaxyx(stdscr, height, width);
 	if((int)(*cursorX+sizeof(char)) >= width){
-		*cursorY += sizeof(char);
-		*cursorX = 0;
-		move(*cursorY, *cursorX);
+		if((int)(*cursorY+sizeof(char)) >= height){
+			*cursorX = 0;
+			scroll(stdscr);
+			move(height, *cursorX);
+		}
+		else{
+			*cursorY += sizeof(char);
+			*cursorX = 0;
+			move(*cursorY, *cursorX);
+		}
 	}
 	else{
 		*cursorX += sizeof(char);
@@ -66,14 +74,15 @@ void move_right(int *cursorY, int *cursorX){
 	}
 }
 
+//TODO: FIX WEIRD WRAP-AROUND DELAY
 void move_left(int *cursorY, int *cursorX){
 	int height;
 	int width;
 	getmaxyx(stdscr, height, width);
-	if((int)(*cursorX-sizeof(char)) <= 0){
-		if(*cursorY == 0){
+	if((int)(*cursorX-sizeof(char)) < 0){
+		if((int)*cursorY < 0){
 			*cursorX = width;
-			move(*cursorY, width);
+			move(*cursorY, *cursorX);
 			scrl(-1);
 		}
 		else{
