@@ -1,3 +1,9 @@
+/******* TODOS: *******
+ 1. Add full document scrolling
+ 2. Add documentation
+ 3. Fixing scroll/type/cursor position difference issues
+ **********************/
+
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
