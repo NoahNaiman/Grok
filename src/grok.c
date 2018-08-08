@@ -18,7 +18,7 @@ void init_grok(PieceChain_t *document){
 	keypad(stdscr, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
-	//idlok(stdscr, true);
+	idlok(stdscr, true);
 	printw("%s\n", document->original);
 	scrollok(stdscr, true);
 	move(0, 0);
@@ -51,7 +51,6 @@ void move_down(int *cursorY, int *cursorX){
 	}
 }
 
-//TODO: FIX WEIRD SCROLLING ISSUES
 void move_right(int *cursorY, int *cursorX){
 	int height;
 	int width;
@@ -60,7 +59,8 @@ void move_right(int *cursorY, int *cursorX){
 		if((int)(*cursorY+sizeof(char)) >= height){
 			*cursorX = 0;
 			scroll(stdscr);
-			move(height, *cursorX);
+			move(*cursorY, *cursorX);
+			*cursorY = height;
 		}
 		else{
 			*cursorY += sizeof(char);
@@ -80,14 +80,15 @@ void move_left(int *cursorY, int *cursorX){
 	int width;
 	getmaxyx(stdscr, height, width);
 	if((int)(*cursorX-sizeof(char)) < 0){
-		if((int)*cursorY < 0){
-			*cursorX = width;
-			move(*cursorY, *cursorX);
+		if((int)*cursorY <= 0){
+			*cursorX = width-1;
+			*cursorY = 0;
 			scrl(-1);
+			move(0, *cursorX);
 		}
 		else{
 			*cursorY -= sizeof(char);
-			*cursorX = width;
+			*cursorX = width-1;
 			move(*cursorY, *cursorX);
 		}
 	}
@@ -145,7 +146,7 @@ void handle_input(int character, int *cursorX, int *cursorY, int *logicalStart, 
 				refresh();
 			}
 			break;
-		default:
+		default: //TODO: ADD TYPE OFF SCREEN PARAMETERS
 			if(*logicalStart == -1){
 				int height;
 				int width;
