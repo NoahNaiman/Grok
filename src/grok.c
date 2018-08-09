@@ -24,7 +24,6 @@ void init_grok(PieceChain_t *document){
 	keypad(stdscr, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
-	idlok(stdscr, true);
 	printw("%s\n", document->original);
 	scrollok(stdscr, true);
 	move(0, 0);
