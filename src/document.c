@@ -33,9 +33,9 @@ int get_line_count(char *filename){
 	return(lineCount);
 }
 
-int get_first_offscreen(char* text, int linesInFile, int height, int width){
+char *get_first_offscreen(char* text, int linesInFile, int height, int width){
 	if(linesInFile <= height){
-		return(sizeof(text)/sizeof(text[0]));
+		return(NULL);
 	}
 	else{
 		char* currentCharacter;
@@ -55,6 +55,12 @@ int get_first_offscreen(char* text, int linesInFile, int height, int width){
 			}
 			index += 1;
 		}
+		char offscreen[width];
+		char *offscreenPointer = offscreen;
+		char *textPointer = &text[index];
+		while(*textPointer != '\n' && *textPointer != '\0'){
+			offscreen = 
+		} 
 		return index;
 	}
 }
