@@ -40,7 +40,6 @@
  *		-pieces->length states the number of characters
  *		 in the corresponding span of text
  *
- *
  * Visual Example:
  *
  *				BEFORE ANY EDITS

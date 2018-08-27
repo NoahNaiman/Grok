@@ -36,7 +36,6 @@
  *		-An integer representing the number of characters
  *		 in this node's span of text
  *
- *
  * Visual Example:
  *	
  *	Original file buffer (read only):

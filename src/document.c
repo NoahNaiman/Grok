@@ -11,9 +11,10 @@ Document_t* init_document(PieceChain_t* chain, char* filename, int height, int w
 	int lineCount = get_line_count(filename);
 	if(lineCount > height){
 		int lineAt = 0;
-
+		
 	}
 	char text[height][width];
+	get_first_offscreen(newDocument->lineBelow, chain->)
 	return newDocument;
 }
 
@@ -33,22 +34,22 @@ int get_line_count(char *filename){
 	return(lineCount);
 }
 
-char *get_first_offscreen(char* text, int linesInFile, int height, int width){
+void get_first_offscreen(char* dest, char* text, int linesInFile, int height, int width){
 	if(linesInFile <= height){
-		return(NULL);
+		dest = NULL;
 	}
 	else{
 		char* currentCharacter;
 		int index = 0;
 		int lineCount = 0;
 		int columnIndex = 0;
-		for(currentCharacter = text; currentCharacter != '\0'; currentCharacter += sizeof(char)){
-			if(currentCharacter == '\n' || columnIndex >= width){
+		for(currentCharacter = text; *currentCharacter != '\0'; currentCharacter += sizeof(char)){
+			if(*currentCharacter == '\n' || columnIndex >= width){
 				lineCount += 1;
 				columnIndex = 0;
 			}
 			if(lineCount > height){
-				if(currentCharacter == '\n'){
+				if(*currentCharacter == '\n'){
 					index += 1;
 				}
 				break;
@@ -59,8 +60,8 @@ char *get_first_offscreen(char* text, int linesInFile, int height, int width){
 		char *offscreenPointer = offscreen;
 		char *textPointer = &text[index];
 		while(*textPointer != '\n' && *textPointer != '\0'){
-			offscreen = 
+			*offscreenPointer++ = *textPointer++;
 		} 
-		return index;
+		dest = offscreen;
 	}
 }
