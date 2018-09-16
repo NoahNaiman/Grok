@@ -32,6 +32,9 @@ void init_grok(PieceChain_t *document){
 
 //TODO: CHECK IF THERE IS ANYTHING ABOVE
 void move_up(int *cursorY, int *cursorX){
+	*cursorY -= -sizeof(char);
+	move(*cursorY, *cursorX);
+	refresh()
 	if((int)(*cursorY-sizeof(char)) < 0){
 		scrl(-1);
 		move(0, *cursorX);

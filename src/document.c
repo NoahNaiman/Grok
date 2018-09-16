@@ -13,8 +13,10 @@ Document_t* init_document(PieceChain_t* chain, char* filename, int height, int w
 		int lineAt = 0;
 		
 	}
+	newDocument->height = height;
+	newDocument->width = width;
 	char text[height][width];
-	get_first_offscreen(newDocument->lineBelow, chain->)
+	get_first_offscreen(newDocument->lineBelow, chain->); //I think I wrote a function for this somewhere?
 	return newDocument;
 }
 
