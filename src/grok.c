@@ -22,7 +22,7 @@ WINDOW* init_grok(PieceChain_t *document){
 	raw();
 	noecho();
 	WINDOW *newPad = newpad(LINES, COLS);
-	nodelay(stdscr, true);
+	nodelay(newPad, true);
 	halfdelay(25);
 	keypad(newPad, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
@@ -43,19 +43,17 @@ void get_terminal_size(int *height, int *width){
 
 //TODO: CHECK IF THERE IS ANYTHING ABOVE
 void move_up(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
-	*cursorY -= -sizeof(char);
-	wmove(view, *cursorY, *cursorX);
-	prefresh(view, -100, -100, -100, -100, *bottom, COLS);
 	if((int)(*cursorY-sizeof(char)) < 0){
 		scrl(-1);
+		*top -= sizeof(char);
+		*bottom -= sizeof(char);
 		wmove(view, *cursorY, *cursorX);
-		prefresh(view, -100, -100, -100, -100, *bottom, COLS);
 	}
 	else{
 		*cursorY -= sizeof(char);
 		wmove(view, *cursorY, *cursorX);
-		prefresh(view, -100, -100, -100, -100, *bottom, COLS);
 	}
+	prefresh(view, *top, 0, 0, 0, *bottom, COLS);
 }
 
 void move_down(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
@@ -69,16 +67,17 @@ void move_down(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 		*cursorY += sizeof(char);
 		wmove(view, *cursorY, *cursorX);
 	}
+	prefresh(view, *top, 0, 0, 0, *bottom, COLS);
 }
 
-void move_right(int *cursorY, int *cursorX){
+void move_right(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 	int height;
 	int width;
-	getmaxyx(stdscr, height, width);
+	getmaxyx(view, height, width);
 	if((int)(*cursorX+sizeof(char)) >= width){
 		if((int)(*cursorY+sizeof(char)) >= height){
 			*cursorX = 0;
-			scroll(stdscr);
+			scroll(view);
 			move(*cursorY, *cursorX);
 			*cursorY = height;
 		}
@@ -92,13 +91,14 @@ void move_right(int *cursorY, int *cursorX){
 		*cursorX += sizeof(char);
 		move(*cursorY, *cursorX);
 	}
+	prefresh(view, *top, 0, 0, 0, *bottom, COLS);
 }
 
 //TODO: FIX WEIRD WRAP-AROUND DELAY
-void move_left(int *cursorY, int *cursorX){
+void move_left(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 	int height;
 	int width;
-	getmaxyx(stdscr, height, width);
+	getmaxyx(view, height, width);
 	if((int)(*cursorX-sizeof(char)) < 0){
 		if((int)*cursorY <= 0){
 			*cursorX = width-1;
@@ -116,11 +116,7 @@ void move_left(int *cursorY, int *cursorX){
 		*cursorX -= sizeof(char);
 		move(*cursorY, *cursorX);
 	}
-}
-
-void delete(int *cursorY, int *cursorX){
-	move_left(cursorY, cursorX);
-	delch();
+	prefresh(view, *top, 0, 0, 0, *bottom, COLS);
 }
 
 void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *top, int *bottom, int *logicalStart, 
@@ -133,7 +129,7 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 				record_piece(document, 1, *logicalStart, stringLength);
 				int height;
 				int width;
-				getmaxyx(stdscr, height, width);
+				getmaxyx(view, height, width);
 				*logicalStart = ((*cursorY) * width) - (*cursorX);
 				*pipelineIndex = 0;
 				memset(pipelineBuffer, '\0', BUFFERSIZE);
@@ -142,21 +138,21 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 		case KEY_BACKSPACE:
 		case KEY_DC:
 		case KEY_DELETE:
-			delete(cursorY, cursorX);
-			refresh();
+			move_left(view, cursorY, cursorX, top, bottom);
+			delch();
+			prefresh(view, *top, 0, 0, 0, *bottom, COLS);
 			break;
 		case KEY_UP:
-			wprintw(view, "UP PRESSED");
 			move_up(view, cursorY, cursorX, top, bottom);
 			break;
 		case KEY_DOWN:
 			move_down(view, cursorY, cursorX, top, bottom);
 			break;
 		case KEY_RIGHT:
-			move_right(cursorY, cursorX);
+			move_right(view, cursorY, cursorX, top, bottom);
 			break;
 		case KEY_LEFT:
-			move_left(cursorY, cursorX);
+			move_left(view, cursorY, cursorX, top, bottom);
 			break;
 		case KEY_MOUSE:
 			if(getmouse(&event) == OK){
@@ -174,7 +170,7 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 			if(*logicalStart == -1){
 				int height;
 				int width;
-				getmaxyx(stdscr, height, width);
+				getmaxyx(view, height, width);
 				*logicalStart = ((*cursorY * width)-(*cursorX));
 			}
 			wprintw(view, "%c", character);
