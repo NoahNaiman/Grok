@@ -21,7 +21,7 @@ WINDOW* init_grok(PieceChain_t *document){
 	initscr();
 	raw();
 	noecho();
-	WINDOW *newPad = newpad(LINES, COLS);
+	WINDOW *newPad = newpad(LINES-1, COLS);
 	nodelay(newPad, true);
 	halfdelay(25);
 	keypad(newPad, true);
@@ -30,7 +30,7 @@ WINDOW* init_grok(PieceChain_t *document){
 	wprintw(newPad, "%s\n", document->original);
 	scrollok(newPad, true);
 	wmove(newPad, 0, 0);
-	prefresh(newPad, 0,0,0,0, LINES-2, COLS);
+	prefresh(newPad, 0,0,0,0, LINES-1, COLS);
 	return newPad;
 }
 
