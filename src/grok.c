@@ -59,8 +59,10 @@ void move_up(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 void move_down(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 	int height;
 	int width;
-	getmaxyx(view, height, width);
+	get_terminal_size(&height, &width);
 	if((int)(*cursorY+sizeof(char)) >= height){
+		*top += sizeof(char);
+		*bottom += sizeof(char);
 		wmove(view, *cursorY, *cursorX);
 	}
 	else{
