@@ -21,16 +21,16 @@ WINDOW* init_grok(PieceChain_t *document){
 	initscr();
 	raw();
 	noecho();
-	WINDOW *newPad = newpad(LINES+1, COLS);
+	WINDOW *newPad = newpad(LINES, COLS);
 	nodelay(stdscr, true);
 	halfdelay(25);
-	keypad(stdscr, true);
+	keypad(newPad, true);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
 	wprintw(newPad, "%s\n", document->original);
 	scrollok(newPad, true);
 	wmove(newPad, 0, 0);
-	prefresh(newPad, 0,0,0,0, LINES-1, COLS);
+	prefresh(newPad, 0,0,0,0, LINES-2, COLS);
 	return newPad;
 }
 
@@ -45,14 +45,16 @@ void get_terminal_size(int *height, int *width){
 void move_up(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 	*cursorY -= -sizeof(char);
 	wmove(view, *cursorY, *cursorX);
-	prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+	prefresh(view, -100, -100, -100, -100, *bottom, COLS);
 	if((int)(*cursorY-sizeof(char)) < 0){
 		scrl(-1);
-		move(0, *cursorX);
+		wmove(view, *cursorY, *cursorX);
+		prefresh(view, -100, -100, -100, -100, *bottom, COLS);
 	}
 	else{
 		*cursorY -= sizeof(char);
-		move(*cursorY, *cursorX);
+		wmove(view, *cursorY, *cursorX);
+		prefresh(view, -100, -100, -100, -100, *bottom, COLS);
 	}
 }
 
@@ -61,12 +63,11 @@ void move_down(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 	int width;
 	getmaxyx(view, height, width);
 	if((int)(*cursorY+sizeof(char)) >= height){
-		//scroll(stdscr);
-		move(height, *cursorX);
+		wmove(view, *cursorY, *cursorX);
 	}
 	else{
 		*cursorY += sizeof(char);
-		move(*cursorY, *cursorX);
+		wmove(view, *cursorY, *cursorX);
 	}
 }
 
@@ -144,9 +145,8 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 			delete(cursorY, cursorX);
 			refresh();
 			break;
-		case KEY_ESCAPE:
-			printw("EXIT PRESSED");
 		case KEY_UP:
+			wprintw(view, "UP PRESSED");
 			move_up(view, cursorY, cursorX, top, bottom);
 			break;
 		case KEY_DOWN:
@@ -162,21 +162,25 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 			if(getmouse(&event) == OK){
 				*cursorX = event.x;
 				*cursorY = event.y;
-				move(*cursorY, *cursorX);
-				refresh();
+				wmove(view, *cursorY, *cursorX);
+				prefresh(view, *top, 0, 0, 0, *bottom, COLS);
 			}
 			break;
-		default: //TODO: ADD TYPE OFF SCREEN PARAMETERS
+		case KEY_ESCAPE:
+			wprintw(view, "EXIT PRESSED");
+			prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+			break;
+		default: 
 			if(*logicalStart == -1){
 				int height;
 				int width;
 				getmaxyx(stdscr, height, width);
 				*logicalStart = ((*cursorY * width)-(*cursorX));
 			}
-			printw("%c", character);
+			wprintw(view, "%c", character);
 			pipelineBuffer[*pipelineIndex] = character;
 			*pipelineIndex += sizeof(char);
-			refresh();
+			prefresh(view, *top, 0, 0, 0, *bottom, COLS);
 	}
 }
 
