@@ -17,18 +17,23 @@
 #define KEY_DELETE 127
 #define KEY_ESCAPE 27
 
+WINDOW setup_grid(char* text, int* height, int* width);
+
 WINDOW* init_grok(PieceChain_t *document){
 	initscr();
 	raw();
 	noecho();
-	WINDOW *newPad = newpad(LINES-1, COLS);
-	nodelay(newPad, true);
+	char* fileText = document->original;
+	WINDOW *newPad = newpad(100, COLS);
+	nodelay(newPad, TRUE);
 	halfdelay(25);
-	keypad(newPad, true);
+	keypad(newPad, TRUE);
 	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 	mouseinterval(0);
-	wprintw(newPad, "%s\n", document->original);
-	scrollok(newPad, true);
+	scrollok(newPad, TRUE);
+	idlok(newPad,TRUE);
+	wprintw(newPad, "EYY: %d\n", LINES);
+	waddstr(newPad, fileText);
 	wmove(newPad, 0, 0);
 	prefresh(newPad, 0,0,0,0, LINES-1, COLS);
 	return newPad;
@@ -44,7 +49,6 @@ void get_terminal_size(int *height, int *width){
 //TODO: CHECK IF THERE IS ANYTHING ABOVE
 void move_up(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 	if((int)(*cursorY-sizeof(char)) < 0){
-		scrl(-1);
 		*top -= sizeof(char);
 		*bottom -= sizeof(char);
 		wmove(view, *cursorY, *cursorX);
@@ -62,7 +66,7 @@ void move_down(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 	get_terminal_size(&height, &width);
 	if((int)(*cursorY+sizeof(char)) >= height){
 		*top += sizeof(char);
-		*bottom += sizeof(char);
+		*bottom = *bottom +  sizeof(char);
 		wmove(view, *cursorY, *cursorX);
 	}
 	else{
