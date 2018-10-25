@@ -55,24 +55,27 @@ void get_terminal_size(int *height, int *width){
     *width = window.ws_col;
 }
 
-//TODO: CHECK IF THERE IS ANYTHING ABOVE
 void move_up(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
-	if(/*(*top != 0) &&*/ (int)(*cursorY-sizeof(char)) < *top){
-		*top -= 1;
-		*bottom -= 1;
-		wmove(view, *cursorY, *cursorX);
+	if(*cursorY != 0){
+		if((int)(*cursorY-sizeof(char)) <= *top){
+			*top -= 1;
+			*bottom -= 1;
+			*cursorY -= 1;
+			wmove(view, *cursorY, *cursorX);
+		}
+		else{
+			*cursorY -= 1;
+			wmove(view, *cursorY, *cursorX);
+		}
+		prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 	}
-	else{
-		*cursorY -= 1;
-		wmove(view, *cursorY, *cursorX);
-	}
-	prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 }
 
 void move_down(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 	if((int)(*cursorY+sizeof(char)) >= *bottom){
 		*top += 1;
 		*bottom += 1;
+		*cursorY += 1;
 		wmove(view, *cursorY, *cursorX);
 	}
 	else{
@@ -83,51 +86,42 @@ void move_down(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 }
 
 void move_right(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
-	int height;
-	int width;
-	getmaxyx(view, height, width);
-	if((int)(*cursorX+sizeof(char)) >= width){
-		if((int)(*cursorY+sizeof(char)) >= height){
-			*cursorX = 0;
-			scroll(view);
-			move(*cursorY, *cursorX);
-			*cursorY = height;
+	if((int)(*cursorX+sizeof(char)) >= COLS){
+		if((int)(*cursorY+sizeof(char)) >= *bottom){
+			*top += 1;
+			*bottom += 1;
+			*cursorY += 1;
+			*cursorX = 0;	
 		}
 		else{
-			*cursorY += sizeof(char);
+			*cursorY += 1; 
 			*cursorX = 0;
-			move(*cursorY, *cursorX);
 		}
 	}
 	else{
-		*cursorX += sizeof(char);
-		move(*cursorY, *cursorX);
+		*cursorX += 1; 
 	}
+	wmove(view, *cursorY, *cursorX);
 	prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 }
 
-//TODO: FIX WEIRD WRAP-AROUND DELAY
 void move_left(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
-	int height;
-	int width;
-	getmaxyx(view, height, width);
-	if((int)(*cursorX-sizeof(char)) < 0){
-		if((int)*cursorY <= 0){
-			*cursorX = width-1;
-			*cursorY = 0;
-			scrl(-1);
-			move(0, *cursorX);
+	if((int)(*cursorX-sizeof(char)) <= 1){
+		if((int)*cursorY <= *top){
+			*top -= 1;
+			*bottom -= 1;
+			*cursorY -= 1;
+			*cursorX = COLS-1;
 		}
 		else{
-			*cursorY -= sizeof(char);
-			*cursorX = width-1;
-			move(*cursorY, *cursorX);
+			*cursorY -= 1;
+			*cursorX = COLS-1; 
 		}
 	}
 	else{
-		*cursorX -= sizeof(char);
-		move(*cursorY, *cursorX);
+		*cursorX -= 1;
 	}
+	wmove(view, *cursorY, *cursorX);
 	prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 }
 
@@ -186,6 +180,7 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 				*logicalStart = ((*cursorY * width)-(*cursorX));
 			}*/
 			wprintw(view, "%c", character);
+			move_right(view, cursorY, cursorX, top, bottom);
 		//	pipelineBuffer[*pipelineIndex] = character;
 		//	*pipelineIndex += sizeof(char);
 			prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
