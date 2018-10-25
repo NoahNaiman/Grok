@@ -48,13 +48,6 @@ WINDOW* init_grok(PieceChain_t *document){
 	return(newPad);
 }
 
-void get_terminal_size(int *height, int *width){
-	struct winsize window;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
-    *height = window.ws_row;
-    *width = window.ws_col;
-}
-
 void move_up(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 	if(*cursorY != 0){
 		if((int)(*cursorY-sizeof(char)) <= *top){
@@ -106,7 +99,7 @@ void move_right(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom)
 }
 
 void move_left(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
-	if((int)(*cursorX-sizeof(char)) <= 1){
+	if((int)(*cursorX-sizeof(char)) < 0){
 		if((int)*cursorY <= *top){
 			*top -= 1;
 			*bottom -= 1;
@@ -145,7 +138,7 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 		case KEY_DC:
 		case KEY_DELETE:
 			move_left(view, cursorY, cursorX, top, bottom);
-			delch();
+			wdelch(view);
 			prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 			break;
 		case KEY_UP:
