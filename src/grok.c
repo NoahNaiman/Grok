@@ -17,14 +17,24 @@
 #define KEY_DELETE 127
 #define KEY_ESCAPE 27
 
-WINDOW setup_grid(char* text, int* height, int* width);
+int get_num_lines(char* text){
+	int lineCount = 0;
+	char* currentPoint;
+	for(currentPoint = text; *currentPoint != EOF; currentPoint++){
+		if(*currentPoint == '\n'){
+			lineCount++;
+		}
+	}
+	return(lineCount);
+}
 
 WINDOW* init_grok(PieceChain_t *document){
 	initscr();
 	raw();
 	noecho();
 	char* fileText = document->original;
-	WINDOW *newPad = newpad(100, COLS);
+	int height = get_num_lines(fileText);
+	WINDOW *newPad = newpad(height, COLS);
 	nodelay(newPad, TRUE);
 	halfdelay(25);
 	keypad(newPad, TRUE);
@@ -32,11 +42,10 @@ WINDOW* init_grok(PieceChain_t *document){
 	mouseinterval(0);
 	scrollok(newPad, TRUE);
 	idlok(newPad,TRUE);
-	wprintw(newPad, "EYY: %d\n", LINES);
-	waddstr(newPad, fileText);
+	wprintw(newPad, "%s", fileText);
 	wmove(newPad, 0, 0);
 	prefresh(newPad, 0,0,0,0, LINES-1, COLS);
-	return newPad;
+	return(newPad);
 }
 
 void get_terminal_size(int *height, int *width){
@@ -48,32 +57,29 @@ void get_terminal_size(int *height, int *width){
 
 //TODO: CHECK IF THERE IS ANYTHING ABOVE
 void move_up(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
-	if((int)(*cursorY-sizeof(char)) < 0){
-		*top -= sizeof(char);
-		*bottom -= sizeof(char);
+	if(/*(*top != 0) &&*/ (int)(*cursorY-sizeof(char)) < *top){
+		*top -= 1;
+		*bottom -= 1;
 		wmove(view, *cursorY, *cursorX);
 	}
 	else{
-		*cursorY -= sizeof(char);
+		*cursorY -= 1;
 		wmove(view, *cursorY, *cursorX);
 	}
-	prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+	prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 }
 
 void move_down(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
-	int height;
-	int width;
-	get_terminal_size(&height, &width);
-	if((int)(*cursorY+sizeof(char)) >= height){
-		*top += sizeof(char);
-		*bottom = *bottom +  sizeof(char);
+	if((int)(*cursorY+sizeof(char)) >= *bottom){
+		*top += 1;
+		*bottom += 1;
 		wmove(view, *cursorY, *cursorX);
 	}
 	else{
-		*cursorY += sizeof(char);
+		*cursorY += 1;
 		wmove(view, *cursorY, *cursorX);
 	}
-	prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+	prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 }
 
 void move_right(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
@@ -97,7 +103,7 @@ void move_right(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom)
 		*cursorX += sizeof(char);
 		move(*cursorY, *cursorX);
 	}
-	prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+	prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 }
 
 //TODO: FIX WEIRD WRAP-AROUND DELAY
@@ -122,7 +128,7 @@ void move_left(WINDOW *view, int *cursorY, int *cursorX, int *top, int *bottom){
 		*cursorX -= sizeof(char);
 		move(*cursorY, *cursorX);
 	}
-	prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+	prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 }
 
 void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *top, int *bottom, int *logicalStart, 
@@ -146,7 +152,7 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 		case KEY_DELETE:
 			move_left(view, cursorY, cursorX, top, bottom);
 			delch();
-			prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+			prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 			break;
 		case KEY_UP:
 			move_up(view, cursorY, cursorX, top, bottom);
@@ -165,24 +171,24 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 				*cursorX = event.x;
 				*cursorY = event.y;
 				wmove(view, *cursorY, *cursorX);
-				prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+				prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 			}
 			break;
 		case KEY_ESCAPE:
 			wprintw(view, "EXIT PRESSED");
-			prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+			prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 			break;
 		default: 
-			if(*logicalStart == -1){
+	/*		if(*logicalStart == -1){
 				int height;
 				int width;
 				getmaxyx(view, height, width);
 				*logicalStart = ((*cursorY * width)-(*cursorX));
-			}
+			}*/
 			wprintw(view, "%c", character);
-			pipelineBuffer[*pipelineIndex] = character;
-			*pipelineIndex += sizeof(char);
-			prefresh(view, *top, 0, 0, 0, *bottom, COLS);
+		//	pipelineBuffer[*pipelineIndex] = character;
+		//	*pipelineIndex += sizeof(char);
+			prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 	}
 }
 
@@ -191,18 +197,16 @@ int main(int argc, char **argv){
 	PieceChain_t *document = init_piecechain(fileName);
 	MEVENT event;
 
+	WINDOW *view = init_grok(document);	
+
 	int cursorX = 0;
 	int cursorY = 0;
-	int height;
-	int width;
-	get_terminal_size(&height, &width);
 	int top = 0;
-	int bottom = height;
+	int bottom = LINES;
 	int logicalStart = -1;
 	int pipelineIndex = 0;
 	char pipelineBuffer[BUFFERSIZE];
-
-	WINDOW *view = init_grok(document);
+	prefresh(view, top, 0, 0, 0, bottom, COLS);	
 
 	int currentChar;
 	while((currentChar = wgetch(view)) != 'q'){
