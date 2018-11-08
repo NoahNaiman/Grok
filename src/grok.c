@@ -4,6 +4,7 @@
  3. Fixing scroll/type/cursor position difference issues
  **********************/
 
+#include <math.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
@@ -18,9 +19,9 @@
 #define KEY_ESCAPE 27
 
 int get_num_lines(char* text){
-	int lineCount = 0;
+	int lineCount = 1; //Unsure of why this offest is necessary, but something to look into later.
 	char* currentPoint;
-	for(currentPoint = text; *currentPoint != EOF; currentPoint++){
+	for(currentPoint = text; *currentPoint; currentPoint++){
 		if(*currentPoint == '\n'){
 			lineCount++;
 		}
@@ -28,7 +29,7 @@ int get_num_lines(char* text){
 	return(lineCount);
 }
 
-void print_with_lines(char* text, int numLines){
+void print_with_lines(WINDOW* view, char* text, int numLines){
 	int tensPlace;
 	if(numLines < 10){
 		tensPlace = 1;
@@ -51,11 +52,11 @@ void print_with_lines(char* text, int numLines){
 	int currentSpace;
 	for(ptr = text, currentLine = 1; *ptr; ptr++){
 		if(*ptr == '\n'){
-			emptySpaceCount = tensPlace - (floor(log10(abs(line)))+1);
-			for(currentSpace = 0; currentSpace < emptySpaceCount; currentSpace++){
-				wprintw(view, " ");
-			}		
-			wprintw(view, "%d ", currentLine);
+			emptySpaceCount = tensPlace - (floor(log10(abs(currentLine)))+1);
+			//for(currentSpace = 0; currentSpace < emptySpaceCount; currentSpace++){
+			//	wprintw(view, " ");
+		//	}		
+			wprintw(view, "%d %s", currentLine, ptr);
 			currentLine++;
 		}
 	}
@@ -75,7 +76,8 @@ WINDOW* init_grok(PieceChain_t *document){
 	mouseinterval(0);
 	scrollok(newPad, TRUE);
 	idlok(newPad,TRUE);
-	wprintw(newPad, "%s", fileText);
+//	wprintw(newPad, "%s", fileText);
+	print_with_lines(newPad, fileText, height);
 	wmove(newPad, 0, 0);
 	prefresh(newPad, 0,0,0,0, LINES-1, COLS);
 	return(newPad);
