@@ -56,7 +56,7 @@ void print_with_lines(WINDOW* view, char* text, int numLines){
 			//for(currentSpace = 0; currentSpace < emptySpaceCount; currentSpace++){
 			//	wprintw(view, " ");
 		//	}		
-			wprintw(view, "%d %s", currentLine, ptr);
+			wprintw(view, "%d %s", currentLine, ptr+0x1);
 			currentLine++;
 		}
 	}
