@@ -28,6 +28,39 @@ int get_num_lines(char* text){
 	return(lineCount);
 }
 
+void print_with_lines(char* text, int numLines){
+	int tensPlace;
+	if(numLines < 10){
+		tensPlace = 1;
+	}
+	else if(numLines >= 10 && numLines < 100){
+		tensPlace = 2;
+	}
+	else if(numLines >= 100 && numLines < 1000){
+		tensPlace = 3;
+	}
+	else if(numLines >= 1000 && numLines < 10000){
+		tensPlace = 4;
+	}
+	else if(numLines >= 10000 && numLines < 100000){
+		tensPlace = 5;
+	}
+	char* ptr;
+	int currentLine;
+	int emptySpaceCount;
+	int currentSpace;
+	for(ptr = text, currentLine = 1; *ptr; ptr++){
+		if(*ptr == '\n'){
+			emptySpaceCount = tensPlace - (floor(log10(abs(line)))+1);
+			for(currentSpace = 0; currentSpace < emptySpaceCount; currentSpace++){
+				wprintw(view, " ");
+			}		
+			wprintw(view, "%d ", currentLine);
+			currentLine++;
+		}
+	}
+}
+
 WINDOW* init_grok(PieceChain_t *document){
 	initscr();
 	raw();
