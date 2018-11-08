@@ -26,9 +26,6 @@ int get_num_lines(char* text){
 			lineLength = 1;
 			lineCount++;
 		}
-		else if(lineLength > COLS){
-			lineCount++;
-		}
 	}
 	return(lineCount);
 }
@@ -46,7 +43,7 @@ void print_with_lines(WINDOW* view, char* text, int lineCount){
 	char lineBuffer[COLS-emptySpaceCount];
 	char* ptr;
 	for(ptr = text; *ptr; ptr++){
-		if(*ptr == '\n' || currentLineLength >= (COLS-emptySpaceCount)){
+		if(*ptr == '\n'){ 
 			emptySpacesToPrint = emptySpaceCount - (floor(log10(abs(currentLine)))+1);
 			while(emptySpacesToPrint != 0){
 				wprintw(view, " ");
