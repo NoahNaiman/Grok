@@ -1,7 +1,6 @@
 /******* TODOS: *******
- 1. Add full document scrolling
+ 1. Add line number printing 
  2. Add documentation
- 3. Fixing scroll/type/cursor position difference issues
  **********************/
 
 #include <math.h>
@@ -19,45 +18,51 @@
 #define KEY_ESCAPE 27
 
 int get_num_lines(char* text){
-	int lineCount = 1; //Unsure of why this offest is necessary, but something to look into later.
+	int lineCount = 2; //Unsure why this offest is necessary, but something to look into later.
+	int lineLength = 1;
 	char* currentPoint;
 	for(currentPoint = text; *currentPoint; currentPoint++){
 		if(*currentPoint == '\n'){
+			lineLength = 1;
+			lineCount++;
+		}
+		else if(lineLength > COLS){
 			lineCount++;
 		}
 	}
 	return(lineCount);
 }
 
-void print_with_lines(WINDOW* view, char* text, int numLines){
-	int tensPlace;
-	if(numLines < 10){
-		tensPlace = 1;
-	}
-	else if(numLines >= 10 && numLines < 100){
-		tensPlace = 2;
-	}
-	else if(numLines >= 100 && numLines < 1000){
-		tensPlace = 3;
-	}
-	else if(numLines >= 1000 && numLines < 10000){
-		tensPlace = 4;
-	}
-	else if(numLines >= 10000 && numLines < 100000){
-		tensPlace = 5;
-	}
+void print_with_lines(WINDOW* view, char* text, int lineCount){
+	//Keep track of current line an its length
+	int currentLine = 1;
+	int currentLineLength = 0;
+
+	//Keep track of how many spaces to print
+	int emptySpacesToPrint;
+	int emptySpaceCount = floor(log10(abs(lineCount)))+1;
+
+	//Buffer to hold current line and pointer to overall text
+	char lineBuffer[COLS-emptySpaceCount];
 	char* ptr;
-	int currentLine;
-	int emptySpaceCount;
-	int currentSpace;
-	for(ptr = text, currentLine = 1; *ptr; ptr++){
-		if(*ptr == '\n'){
-			emptySpaceCount = tensPlace - (floor(log10(abs(currentLine)))+1);
-			//for(currentSpace = 0; currentSpace < emptySpaceCount; currentSpace++){
-			//	wprintw(view, " ");
-		//	}		
-			wprintw(view, "%d %s", currentLine, ptr+0x1);
+	for(ptr = text; *ptr; ptr++){
+		if(*ptr == '\n' || currentLineLength >= (COLS-emptySpaceCount)){
+			emptySpacesToPrint = emptySpaceCount - (floor(log10(abs(currentLine)))+1);
+			while(emptySpacesToPrint != 0){
+				wprintw(view, " ");
+				emptySpacesToPrint--;
+			}		
+			wprintw(view, "%d %s\n", currentLine, lineBuffer);
 			currentLine++;
+			currentLineLength = 0;
+			if(*(ptr+0x1) == '\n'){
+				lineBuffer[0] = '\0';
+			}
+		}
+		else{
+			lineBuffer[currentLineLength] = *ptr;
+			lineBuffer[currentLineLength+1] = '\0';
+			currentLineLength++;
 		}
 	}
 }
