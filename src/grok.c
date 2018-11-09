@@ -1,6 +1,9 @@
 /******* TODOS: *******
- 1. Add line number printing 
- 2. Add documentation
+ 1. Allow for saving
+ 2. Fix where you can actually type
+ 3. Fix just EVERYTHING about window resizing
+ 4. Add documentation
+ 5. Add command functionality and different modes
  **********************/
 
 #include <math.h>
@@ -78,7 +81,6 @@ WINDOW* init_grok(PieceChain_t *document){
 	mouseinterval(0);
 	scrollok(newPad, TRUE);
 	idlok(newPad,TRUE);
-//	wprintw(newPad, "%s", fileText);
 	print_with_lines(newPad, fileText, height);
 	wmove(newPad, 0, 0);
 	prefresh(newPad, 0,0,0,0, LINES-1, COLS);
@@ -203,16 +205,13 @@ void handle_input(WINDOW *view, int character, int *cursorX, int *cursorY, int *
 			prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 			break;
 		default: 
-	/*		if(*logicalStart == -1){
-				int height;
-				int width;
-				getmaxyx(view, height, width);
-				*logicalStart = ((*cursorY * width)-(*cursorX));
-			}*/
+			if(*logicalStart == -1){
+				*logicalStart = ((*cursorY * COLS)-(*cursorX));
+			}
 			wprintw(view, "%c", character);
 			move_right(view, cursorY, cursorX, top, bottom);
-		//	pipelineBuffer[*pipelineIndex] = character;
-		//	*pipelineIndex += sizeof(char);
+			pipelineBuffer[*pipelineIndex] = character;
+			*pipelineIndex += sizeof(char);
 			prefresh(view, *top, 0, 0, 0, LINES-1, COLS);
 	}
 }
