@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,26 +19,24 @@ PieceChain_t* init_piecechain(char* fileName){
 	FILE *fileDescriptor = fopen(fileName, "rb");
 
 	if(fileDescriptor == NULL){
+		if(errno == EACCES){
+			perror("Error");
+			exit(EXIT_FAILURE);
+		}
 
-		newChain->original = (char *)malloc(BUFFERSIZE * sizeof(char));
-		
-		newChain->add = (char *)malloc(BUFFERSIZE * sizeof(char));
-
+		newChain->original = (char *)calloc(BUFFERSIZE, sizeof(char));
+		newChain->add = (char *)calloc(BUFFERSIZE, sizeof(char));
 		newChain->pieces = init_splay_tree(0, 0, 0, 0);
 	}
 	else{
 		int fileLength = get_original_size(fileDescriptor);
-		newChain->original = (char *)malloc(fileLength * sizeof(char));
+		newChain->original = (char *)calloc(fileLength, sizeof(char));
+		newChain->add = (char *)calloc(fileLength, sizeof(char));
 
 		size_t lengthRead = fread(newChain->original, sizeof(char), fileLength, fileDescriptor);
-		newChain->original[lengthRead++] = '\n';
-		newChain->original[lengthRead++] = '\0';
-
-		fclose(fileDescriptor);
-
-		newChain->add = (char *)malloc(fileLength * sizeof(char));
-
 		newChain->pieces = init_splay_tree(0, 0, 0, lengthRead);
+		
+		fclose(fileDescriptor);
 	}
 	return newChain;
 }
