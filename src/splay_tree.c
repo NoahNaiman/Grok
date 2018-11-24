@@ -258,28 +258,31 @@ SplayTree_t* insert(SplayTree_t* root, SplayTree_t* newNode){
 	}
 
 	int key = newNode->logicalStart;
+	int rootLogical = root->logicalStart;
+	int newNodeLength = newNode->length;
 
 	root = splay(root, key);
 
-	if(root->logicalStart == key){
-		root->logicalStart = root->logicalStart + newNode->length;
-		increment(root->right, newNode->length);
+	if(rootLogical == key){
+		root->logicalStart = rootLogical + newNodeLength; 
+		increment(root->right, newNodeLength); 
 		newNode->right = root;
 		newNode->left = root->left;
 		root->left = NULL;
 		return newNode;
 	}
-	else if(root->logicalStart > key){
+	else if(rootLogical > key){
 		//Repeat splay to get node with closest but less logical start
 		root = splay(root, key);
 	}
-
+	
 	int preFractureLength = newNode->logicalStart - root->logicalStart;
-	int pyhsicalFracture = root->physicalStart + preFractureLength + newNode->length;	
-	int logicalFracture = root->logicalStart + preFractureLength + newNode->length;
+	int pyhsicalFracture = root->physicalStart + preFractureLength + newNodeLength;
+	int logicalFracture = root->logicalStart + preFractureLength + newNodeLength; 
 	int postFractureLength = root->length - preFractureLength;
+
 	SplayTree_t* postFractureNode = init_splay_tree(root->buffer, pyhsicalFracture, logicalFracture, postFractureLength);
-	increment(root->right, newNode->length);
+	increment(root->right, newNodeLength); 
 	postFractureNode->right = root->right;
 
 	root->length = preFractureLength;

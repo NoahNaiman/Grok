@@ -190,8 +190,7 @@ int get_current_length(SplayTree_t* root){
 	if(root == NULL){
 		return 0;
 	}
-	int currentLength = 0;
-	currentLength += root->length + get_current_length(root->left) + get_current_length(root->right);
+	int currentLength = root->length + get_current_length(root->left) + get_current_length(root->right);
 	
 	return currentLength;
 }
